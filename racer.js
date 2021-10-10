@@ -88,9 +88,9 @@ var game = (function () {
   };
 
   var bridge = {
-    x: 352,
-    y: 40,
-    w: 88,
+    x: 336,
+    y: 98,
+    w: 336,
     h: 88,
   };
 
@@ -254,7 +254,7 @@ var game = (function () {
     var lastProjectedHeight = Number.POSITIVE_INFINITY;
     var counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
 
-    console.log("currentSegment", currentSegmentIndex);
+    // console.log("currentSegment", currentSegmentIndex);
 
     var playerPosSegmentHeight = road[absoluteIndex % road.length].height;
     var playerPosNextSegmentHeight =
@@ -356,14 +356,14 @@ var game = (function () {
     // --------------------------
     // --     Draw the hud     --
     // --------------------------
-    drawString(
-      "" +
-        Math.round(
-          (absoluteIndex / (roadParam.length - render.depthOfField)) * 100
-        ) +
-        "%",
-      { x: 287, y: 1 }
-    );
+    // drawString(
+    //   "" +
+    //     Math.round(
+    //       (absoluteIndex / (roadParam.length - render.depthOfField)) * 100
+    //     ) +
+    //     "%",
+    //   { x: 287, y: 1 }
+    // );
     var now = new Date();
     var diff = now.getTime() - startTime.getTime();
 
@@ -378,9 +378,9 @@ var game = (function () {
 
     currentTimeString = "" + min + ":" + sec + ":" + mili;
 
-    drawString(currentTimeString, { x: 1, y: 1 });
+    // drawString(currentTimeString, { x: 1, y: 1 });
     var speed = Math.round((player.speed / player.maxSpeed) * 200);
-    drawString("" + speed + "mph", { x: 1, y: 10 });
+    // drawString("" + speed + "mph", { x: 1, y: 10 });
   };
 
   // Drawing primitive
@@ -462,8 +462,8 @@ var game = (function () {
       position2,
       scale2,
       offset2,
-      -0.5,
-      0.5,
+      -0.5, // ancho carriles
+      0.5, // ancho carriles
       road
     );
 
@@ -637,27 +637,26 @@ var game = (function () {
           break;
       }
 
-      //add props
-
+      //add props and sprites
       for (var i = 0; i < roadParam.zoneSize; i++) {
-        // add a tree
-        if ((i % roadParam.zoneSize) / 4 == 0) {
+        // add a bridge
+        const CASAS = zones > 19 && zones <= 21;
+        const PUENTES = zones > 18 && zones <= 19;
+        const DESIERTO = zones >= 6 && zones <= 18;
+        console.log(i, zones, CASAS, PUENTES, DESIERTO);
+        debugger;
+        if (CASAS && i % 10 === 0) {
           var sprite = { type: house, pos: -0.55 };
-        } else {
-          if (r() < 0.09) {
-            var spriteType = [tree, house, rock][Math.floor(r() * 1.9)];
-            var sprite = { type: spriteType, pos: 0.9 + 4 * r() };
-            if (r() < 0.5) {
-              sprite.pos = -sprite.pos;
-            }
-          } else {
-            // console.log("zone 3 NON ", zones);
-            // if (zones !== 0) {
-            //   var sprite = { type: bridge, pos: 0.3 };
-            // } else {
-            var sprite = false;
-            // }
+        } else if (PUENTES && i % 2 === 0) {
+          var sprite = { type: bridge, pos: 0.8 };
+        } else if (DESIERTO && r() < 0.09) {
+          var spriteType = [tree, rock][Math.floor(r() * 1.9)];
+          var sprite = { type: spriteType, pos: 0.9 + 4 * r() };
+          if (r() < 0.5) {
+            sprite.pos = -sprite.pos;
           }
+        } else {
+          var sprite = false;
         }
 
         road.push({
