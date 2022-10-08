@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script> -->
     <!--<script src="jquery.js"></script>-->
-    <script src="racer.js"></script>
+    <link rel="stylesheet" href="style.css">
     <style>
       html,
       body {
-        margin: 0;
+        margin: auto;
         padding: 0;
         overflow: visible;
         background: black;
         image-rendering: pixelated;
       }
-    </style>
+      </style>
   </head>
   <body>
     <canvas id="c" style="position: absolute"></canvas>
+    <script type="module" src="./src/generateBumpyRoad.js"></script>
+    <script type="module" src="racer.js"></script>
   </body>
 </html>

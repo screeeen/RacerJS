@@ -1,0 +1,12 @@
+
+#c {
+    /* border: 3px solid yellow; */
+    resize: both;
+    position: absolute;
+    top:10;
+    left: 10;
+    
+    
+    transform: scale(2,2)translate(100px,50%);
+
+}
