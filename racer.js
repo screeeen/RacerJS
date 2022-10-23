@@ -6,9 +6,9 @@ import { drawString } from './drawString.js'
 import { drawSegment } from './drawSegment.js'
 import { drawImage } from './drawImage.js'
 import { drawSprite } from './drawSprite.js'
-import { drawTrapez } from './drawTrapez.js'
 import { drawBackground } from './drawBackground.js'
 import { renderSplashFrame } from './src/renderSplashFrame.js'
+
 
   var r = Math.random;
 
@@ -18,24 +18,59 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
   export const canvas = document.getElementById('c');
   export const context = canvas.getContext("2d");
   export const startTime = new Date();
+  
+  let entrada;
+  let salida;
+  let printing;
 
-  export const keys = []; // teclas
-  // var startTime;
-  var lastDelta = 0;
-  var currentTimeString = "";
+
+
+  // estoy tratando de sacar la funcion que controla los printers fuera del gameinterval. 
+// quiero usar un temporizador quie
+  export const printa = ({currentTime, timer}) => {
+    
+    salida = currentTime.getTime() + timer;
+    if (!entrada && !printing) {entrada = currentTime.getTime()}
+    console.log('salida < entrada', salida < entrada);
+
+    
+    console.log('entrada', entrada)
+    console.log('salida', salida)
+
+    // var min = Math.floor(diff / 60000);
+    // var sec = Math.floor((diff - min * 60000) / 1000);
+    // if (sec < 10) sec = "0" + sec;
+
+    if (salida > entrada) {
+      var t = currentTime.getTime();
+      var min = Math.floor(t / 60000);
+      var sec = Math.floor((t - min * 60000) / 1000);
+      if (sec < 10) sec = "0" + sec;
+
+        drawString(
+          {string: "time: " + sec,
+          pos:{ x: 2, y: 40 }}
+          );
+  }
+}
+
+
   export const spritesheet = new Image(); 
-
+  export const keys = []; // teclas
   export const road = [];
 
   const roadSegmentSize = 5;
   const numberOfSegmentPerColor = 4;
+
+  let lastDelta = 0;
+  let currentTimeString = "";
 
   let splashInterval;
   let gameInterval;
 
   //initialize the game
   const init = () => {
-    console.log('init')
+    
     // configure canvas
     canvas.height = render.height;
     canvas.width = render.width;
@@ -49,11 +84,22 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
     document.addEventListener('keyup',function (e) {
       keys[e.keyCode] = false;
     });
-    generateRoad();
-    // generateBumpyRoad()
 
-    console.log('road', road)
+    generateRoad();
+
+    // generateBumpyRoad()
+  //   let data = JSON.stringify(road);
+  //   navigator.clipboard
+  // .writeText(data)
+  // .then(
+  //   // (clipText) => (document.querySelector(".editor").innerText += clipText)
+  //   console.log('copied')
+  // );
+
+  console.log('road', road);
+
   };
+
 
   //renders one frame
   const renderGameFrame = () => {
@@ -116,26 +162,33 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
       };
     }
 
+
+    const spriteBuffer = [];
     drawBackground(-player.posx);
 
-    var spriteBuffer = [];
-
+    
     // --------------------------
     // --   Render the road    --
     // --------------------------
-    var absoluteIndex = Math.floor(player.position / roadSegmentSize);
+    let absoluteIndex = Math.floor(player.position / roadSegmentSize);
+    const CHECKPOINT_PHASE = absoluteIndex > 100  && absoluteIndex < 200;
+    // if (absoluteIndex > 100) debugger;
+    
 
-    // if (absoluteIndex % 100 == 0) {
-      drawString("Checkpoint ", { x: 100, y: 20 });
-    // }
+    //CHECKPOINT
+    if (CHECKPOINT_PHASE ) {
+      drawString({string:"Checkpoint ",pos: { x: 100, y: 20 },time:10});
+    }
 
+    
+    //FINISH GAME
     if (absoluteIndex >= roadParam.length - render.depthOfField - 1) {
-      clearInterval(gameInterval);  
-
       drawString(
         "gameInterval " + gameInterval + "\nabsoluteIndex " + absoluteIndex,
         { x: 100, y: 20 }
       );
+      clearInterval(gameInterval);  
+
       // drawString("Press t to tweet your time.", { x: 30, y: 30 });
       // $(window).keydown(function (e) {
       //   if (e.keyCode == 84) {
@@ -214,8 +267,9 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
           nextSegment.curve - baseOffset - lastDelta * endScaling, //offset
           counter < numberOfSegmentPerColor, //alternate
           currentSegmentIndex == 2 ||
-            currentSegmentIndex == roadParam.length - render.depthOfField //finishStart
-        );
+            currentSegmentIndex == roadParam.length - render.depthOfField, //finishStart
+          absoluteIndex
+            );
       }
 
       if (currentSegment.sprite) {
@@ -258,68 +312,67 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
     // --------------------------
     // --     Draw the hud     --
     // --------------------------
-    // drawString(
-    //   "" +
-    //     Math.round(
-    //       (absoluteIndex / (roadParam.length - render.depthOfField)) * 100
-    //     ) +
-    //     "%",
-      // { x: 287, y: 1 }
-    // );
-
     drawString(
-      "" +
+      {string: "" +
         Math.round(
           (absoluteIndex / (roadParam.length - render.depthOfField)) * 100
         ) +
         "%",
-      { x: 287, y: 1 }
+      pos:{ x: 287, y: 1 }}
     );
 
     var speed = Math.round((player.speed / player.maxSpeed) * 200);
-    drawString("" + speed + "mph", { x: 280, y: 20 });
+    drawString({string:"" + speed + "mph", pos:{ x: 280, y: 20 }});
     
     drawString(
-      "" + "absoluteIndex " + absoluteIndex,
-      { x: 2, y: 1 }
+    {string:  "" + "absoluteIndex " + absoluteIndex,
+      pos:{ x: 2, y: 1 }}
     );
 
     drawString(
-      "" + "height " + road[absoluteIndex].height,
-      { x: 2, y: 10 }
+    {string: "" + "height " + road[absoluteIndex].height,
+      pos:{ x: 2, y: 10 }}
     );
 
     drawString(
-      "" + "curve " + road[absoluteIndex].curve,
-      { x: 2, y: 20 }
-    );
+      {string: "" + "curve " + road[absoluteIndex].curve,
+        pos:{ x: 2, y: 20 }}
+      );
 
+    ///////// TIMER /////////
     var now = new Date();
+    
     var diff = now.getTime() - startTime.getTime();
 
     var min = Math.floor(diff / 60000);
 
     var sec = Math.floor((diff - min * 60000) / 1000);
+
     if (sec < 10) sec = "0" + sec;
 
     var mili = Math.floor(diff - min * 60000 - sec * 1000);
     if (mili < 100) mili = "0" + mili;
     if (mili < 10) mili = "0" + mili;
 
-    currentTimeString = "" + min + ":" + sec + ":" + mili;
+    currentTimeString = "" + min + ":" + sec;
+
+      printa ({currentTime: now, timer: 1000})
+
   };
 
+  ////////////////// SPLASH //////////////////
 
-
+  // splash
   const splashScreen = () => {
     renderSplashFrame();
     if (keys[32]) {
     
       clearInterval(splashInterval);
-      gameInterval = setInterval(renderGameFrame, 30);
+      gameInterval = setInterval(renderGameFrame, 24);
     }
   }
 
+  // main
   const start= () => {
     
     spritesheet.onload = function () {

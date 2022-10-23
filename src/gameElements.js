@@ -1,6 +1,6 @@
 export const roadParam = {
     maxHeight: 900,
-    maxCurve: 300,
+    maxCurve: 200,
     length: 22, // largo de toda la pista
     curvy: 0.8,
     mountainy: 0.8,

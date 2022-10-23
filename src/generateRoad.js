@@ -1,5 +1,7 @@
 import {roadParam, house,rock,bridge,tree} from './gameElements.js'
 import {road} from '../racer.js'
+import {context} from '../racer.js'
+import roadJson from '../road.json' assert {type: 'json'};
 
 // -------------------------------------
 // ---  Generates the road randomly  ---
@@ -14,6 +16,7 @@ export const  generateRoad = () => {
     [0, 1, 2],
     [0, 2, 2],
     [0, 1, 1],
+    [0, 2, 1],
   ];
 
   let currentStateC = 0; //0=straight 1=left 2= right
@@ -21,6 +24,7 @@ export const  generateRoad = () => {
     [0, 1, 2],
     [0, 2, 2],
     [0, 1, 1],
+    [0, 2, 1],
   ];
 
   // VALORES?
@@ -30,13 +34,8 @@ export const  generateRoad = () => {
   // ZONAS, roadParam
   let zones = roadParam.length;
   
-  
-
   // ?? que es este --
   while (zones--) {
-    // Generate current Zone
-    // console.warn('~~ GENERA ~~');
-    // console.log('zone', zones);
 
     let finalHeight;
     switch (currentStateH) {
@@ -77,10 +76,11 @@ export const  generateRoad = () => {
       let sprite = false;
 
       // console.log(i, zones, CASAS, PUENTES, DESIERTO);
-
-      // debugger;
+      //TODO: separar la population
       if (CASAS && i % freqCasas === 0) {
-         sprite = { type: house, pos: -0.55 };
+          const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
+         sprite = { type: house, pos: chosenValue }; //0.55 best for left
+         console.log('** sprite',sprite)
       } else if (PUENTES && i % freqPuentes === 0) {
          sprite = { type: bridge, pos: 0.8 };
       } else if (DESIERTO && freqCactus) {
@@ -90,47 +90,43 @@ export const  generateRoad = () => {
           sprite.pos = -sprite.pos;
         }
       } 
-      // else {
-      //   sprite = false;
-      // }
+      else {
+        sprite = false;
+      }
 
-      // road.push({
-      //   height:
-      //     currentHeight +
-      //     (finalHeight / 2) *
-      //       (1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2)),
-      //   curve:
-      //     currentCurve +
-      //     (finalCurve / 2) *
-      //       (1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2)),
-      //   sprite: sprite,
-      // });
+      // debugger;
 
-      // console.log('(finalHeight / 2)',(finalHeight / 2))
-      // console.log('((i / roadParam.zoneSize))',((i / roadParam.zoneSize)));
-      // console.log('(1 + Math.sin((i / roadParam.zoneSize)',(Math.sin((i / roadParam.zoneSize))));
-      // console.log(' Math.PI - Math.PI / 2', Math.PI - Math.PI / 2);
-      // console.log('(1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2))',(1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2)))
+    console.log('1*** finalHeight',finalHeight)
+    console.log('1*** currentStateH',currentStateH)
 
       road.push({
         height:
-          parseInt(currentHeight +
+          currentHeight +
           (finalHeight / 2) *
-            (1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2))),
+            (1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2)),
         curve:
-          parseInt(currentCurve +
+          currentCurve +
           (finalCurve / 2) *
-            (1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2))),
+            (1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2)),
         sprite: sprite,
       });
+
+      // console.log('(finalHeight / 2)',(finalHeight / 2))
+      // console.log('i',i);
+      // console.log('(roadParam.zoneSize)',(roadParam.zoneSize));
+      // console.log('(i / roadParam.zoneSize)',((i / roadParam.zoneSize)));
+      // console.log('(1 + Math.sin((i / roadParam.zoneSize)',(Math.sin((i / roadParam.zoneSize))));
+      // console.log(' Math.PI - Math.PI / 2', Math.PI - Math.PI / 2);
+      // console.log('(1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2))',(1 + Math.sin((i / roadParam.zoneSize) * Math.PI - Math.PI / 2)))
     }
+
+  
 
     currentHeight += finalHeight;
     currentCurve += finalCurve;
 
-    console.log('*** finalHeight',finalHeight)
-    console.log('*** currentStateH',currentStateH)
-
+    console.log('2*** finalHeight',finalHeight)
+    console.log('2*** currentStateH',currentStateH)
     // Find next zone
     if (r() < roadParam.mountainy) {
     //   console.log('*** next', transitionH[currentStateH][1 + Math.round(r())])
@@ -147,6 +143,13 @@ export const  generateRoad = () => {
       currentStateC = transitionC[currentStateC][0];
     }
   }
+
+  // const thing = JSON.stringify(roadJson)
+  // const roadPlot = JSON.parse(thing)
+  // console.log('roadPlot',roadPlot)
+
+  // roadPlot.map(part => road.push(part))
+  // console.log('road',road)
 
   roadParam.length = roadParam.length * roadParam.zoneSize;
 };

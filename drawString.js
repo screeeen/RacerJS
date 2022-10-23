@@ -1,6 +1,8 @@
-import {spritesheet, context} from './racer.js'
+import {spritesheet, context, startTime} from './racer.js'
 
-export const drawString = (string, pos) => {
+export const drawString = ({string, pos, currentTimeString}) => {
+  // console.log('currentTimeString', currentTimeString, startTime.getTime())
+    if (string === undefined) return;
     string = string.toUpperCase();
     var cur = pos.x;
 
