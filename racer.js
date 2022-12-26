@@ -31,11 +31,11 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
     
     salida = currentTime.getTime() + timer;
     if (!entrada && !printing) {entrada = currentTime.getTime()}
-    console.log('salida < entrada', salida < entrada);
+    // console.log('salida < entrada', salida < entrada);
 
     
-    console.log('entrada', entrada)
-    console.log('salida', salida)
+    // console.log('entrada', entrada)
+    // console.log('salida', salida)
 
     // var min = Math.floor(diff / 60000);
     // var sec = Math.floor((diff - min * 60000) / 1000);

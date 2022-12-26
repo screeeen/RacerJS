@@ -76,7 +76,6 @@ export const  generateRoad = () => {
       let sprite = false;
 
       // console.log(i, zones, CASAS, PUENTES, DESIERTO);
-      //TODO: separar la population
       if (CASAS && i % freqCasas === 0) {
           const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
          sprite = { type: house, pos: chosenValue }; //0.55 best for left
