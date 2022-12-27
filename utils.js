@@ -1,15 +1,9 @@
-// export const rgbToHex = (r, g, b) => {
-//     console.log('r', r)
-//     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
-// }
-
 export const componentToHex = (c) => {
     var hex = c.toString(16)
     return hex.length == 1 ? '0' + hex : hex
 }
 
 export const rgbToHex = (r, g, b) => {
-    console.log('r', componentToHex(parseInt(r)))
     return (
         '#' +
         componentToHex(parseInt(r)) +
@@ -25,18 +19,18 @@ export const hexToRGB = (hex) => {
     return [r, g, b]
 }
 
-// lerp(valorInicial, valorFinal, porcentajeInterpolacion);
 export const lerp = (a, b, t) => {
-    // console.log('t', t)
-    // console.log('todo', (1 - t) * a + t * b)
-
     return (1 - t) * a + t * b
 }
 
 export const interpolateObjects = (start, end, t) => {
     const result = {}
     Object.keys(start).forEach((key) => {
-        result[key] = (1 - t) * start[key] + t * end[key]
+        result[key] = rgbToHex(
+            Math.floor((1 - t) * start[key][0] + t * end[key][0]),
+            Math.floor((1 - t) * start[key][1] + t * end[key][1]),
+            Math.floor((1 - t) * start[key][2] + t * end[key][2])
+        )
     })
     return result
 }
