@@ -15,7 +15,7 @@ export const drawSegment = (
     finishStart,
     absoluteIndex
 ) => {
-    const stageLength = 500
+    const stageLength = 100
     const stages = [
         {
             position: -1,
@@ -33,7 +33,7 @@ export const drawSegment = (
             position: 0,
             name: 'sandy',
             startIndex: 0,
-            endIndex: 500,
+            endIndex: 100,
             colors: {
                 grass: [231, 224, 204],
                 road: [212, 201, 166],
@@ -43,9 +43,21 @@ export const drawSegment = (
         },
         {
             position: 1,
+            name: 'water',
+            startIndex: 100,
+            endIndex: 200,
+            colors: {
+                grass: [0, 0, 204],
+                road: [212, 201, 166],
+                lane: [212, 201, 166],
+                border: [231, 224, 204],
+            },
+        },
+        {
+            position: 2,
             name: 'rocky',
-            startIndex: 500,
-            endIndex: 1000,
+            startIndex: 200,
+            endIndex: 300,
             colors: {
                 grass: alternate ? [10, 10, 10] : [0, 10, 102],
                 border: alternate ? [0, 0, 0] : [200, 200, 200],
@@ -55,39 +67,24 @@ export const drawSegment = (
         },
     ]
 
-    const currentPhase =
-        stages.find(
-            (phase) =>
-                absoluteIndex >= phase.startIndex &&
-                absoluteIndex < phase.endIndex
-        ) || stages[0]
+    console.log('(absoluteIndex / stageLength)', absoluteIndex / stageLength)
 
-    const lastPhase =
-        currentPhase && currentPhase.position < 1 ? currentPhase : stages[0]
+    const currentPhasePosition = Math.floor(absoluteIndex / stageLength) + 1
+    const lastPhasePosition = currentPhasePosition - 1
+    const currentPhase = stages[currentPhasePosition] || stages[0]
+    const lastPhase = stages[lastPhasePosition] || stages[0]
+
+    if (currentPhase.name === undefined) debugger
+    if (lastPhase.name === undefined) debugger
 
     console.log('current', currentPhase.name)
     console.log('last', lastPhase.name)
 
     let color = {}
 
-    if (currentPhase) {
-        // Color de la carretera en la fase actual
-        color = interpolateObjects(
-            lastPhase.colors,
-            currentPhase.colors,
-            absoluteIndex / stageLength
-        )
-    } else {
-        const normal = stages.find((phase) => phase.name === 'normal')
-        const normalColors = normal.colors
-        Object.keys(normalColors).forEach((key) => {
-            color[key] = rgbToHex(
-                normalColors[key][0],
-                normalColors[key][1],
-                normalColors[key][2]
-            )
-        })
-    }
+    // Color de la carretera en la fase actual
+    const t = (absoluteIndex % stageLength) / stageLength
+    color = interpolateObjects(lastPhase.colors, currentPhase.colors, t)
 
     //draw grass:
     // console.log('color.grass', color.grass)
