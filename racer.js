@@ -329,15 +329,15 @@ import { renderSplashFrame } from './src/renderSplashFrame.js'
       pos:{ x: 2, y: 1 }}
     );
 
-    drawString(
-    {string: "" + "height " + road[absoluteIndex].height,
-      pos:{ x: 2, y: 10 }}
-    );
+    // drawString(
+    // {string: "" + "height " + road[absoluteIndex].height,
+    //   pos:{ x: 2, y: 10 }}
+    // );
 
-    drawString(
-      {string: "" + "curve " + road[absoluteIndex].curve,
-        pos:{ x: 2, y: 20 }}
-      );
+    // drawString(
+    //   {string: "" + "curve " + road[absoluteIndex].curve,
+    //     pos:{ x: 2, y: 20 }}
+    //   );
 
     ///////// TIMER /////////
     var now = new Date();

@@ -18,10 +18,10 @@ export const drawSegment = (
     const stageLength = 100
     const stages = [
         {
-            position: -1,
+            position: 0,
             name: 'normal',
-            startIndex: -1,
-            endIndex: -1,
+            startIndex: 0,
+            endIndex: 100,
             colors: {
                 grass: alternate ? [136, 136, 136] : [102, 102, 102],
                 border: alternate ? [238, 238, 238] : [204, 204, 204],
@@ -30,9 +30,9 @@ export const drawSegment = (
             },
         },
         {
-            position: 0,
+            position: 1,
             name: 'sandy',
-            startIndex: 0,
+            startIndex: 90,
             endIndex: 100,
             colors: {
                 grass: [231, 224, 204],
@@ -42,9 +42,9 @@ export const drawSegment = (
             },
         },
         {
-            position: 1,
+            position: 2,
             name: 'water',
-            startIndex: 100,
+            startIndex: 190,
             endIndex: 200,
             colors: {
                 grass: [0, 0, 204],
@@ -54,9 +54,9 @@ export const drawSegment = (
             },
         },
         {
-            position: 2,
+            position: 3,
             name: 'rocky',
-            startIndex: 200,
+            startIndex: 290,
             endIndex: 300,
             colors: {
                 grass: alternate ? [10, 10, 10] : [0, 10, 102],
@@ -67,28 +67,50 @@ export const drawSegment = (
         },
     ]
 
-    console.log('(absoluteIndex / stageLength)', absoluteIndex / stageLength)
+    const getInterpolationRange = (stages, absoluteIndex, stageLength) => {
+        let currentPhasePosition = Math.floor(absoluteIndex / stageLength) + 1
+        let lastPhasePosition = currentPhasePosition - 1
 
-    const currentPhasePosition = Math.floor(absoluteIndex / stageLength) + 1
-    const lastPhasePosition = currentPhasePosition - 1
-    const currentPhase = stages[currentPhasePosition] || stages[0]
-    const lastPhase = stages[lastPhasePosition] || stages[0]
+        const currentPhase = stages[currentPhasePosition]
+            ? stages[currentPhasePosition]
+            : stages[0]
+        const lastPhase = stages[lastPhasePosition]
+            ? stages[lastPhasePosition]
+            : stages[0]
 
-    if (currentPhase.name === undefined) debugger
-    if (lastPhase.name === undefined) debugger
+        const startIndex = currentPhase.startIndex
+        const endIndex = currentPhase.endIndex
 
-    console.log('current', currentPhase.name)
-    console.log('last', lastPhase.name)
+        let t = 0
+        if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
+            t = (absoluteIndex - startIndex) / (endIndex - startIndex)
+        }
+
+        return {
+            currentPhase,
+            lastPhase,
+            // t: (absoluteIndex % stageLength) / stageLength,
+            t,
+        }
+    }
+
+    const currentStage = getInterpolationRange(
+        stages,
+        absoluteIndex,
+        stageLength
+    )
+    // console.log('currentStage', currentStage)
 
     let color = {}
 
     // Color de la carretera en la fase actual
-    const t = (absoluteIndex % stageLength) / stageLength
-    color = interpolateObjects(lastPhase.colors, currentPhase.colors, t)
+    color = interpolateObjects(
+        currentStage.lastPhase.colors,
+        currentStage.currentPhase.colors,
+        currentStage.t
+    )
 
     //draw grass:
-    // console.log('color.grass', color.grass)
-
     context.fillStyle = color.grass
     context.fillRect(0, position2, render.width, position1 - position2)
 
