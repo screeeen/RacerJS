@@ -24,6 +24,7 @@ import { drawBackground } from './drawBackground.js';
 import { renderSplashFrame } from './src/renderSplashFrame.js';
 import { getStages, STAGESLENGTH } from './src/stages.js';
 import { getBackgroundColor } from './src/getBackgroundColor.js';
+import { interpolateObjects, rgbToHex } from './utils.js';
 
 const r = Math.random;
 
@@ -92,6 +93,7 @@ const init = () => {
 //renders one frame
 const renderGameFrame = () => {
     // Clean screen
+    console.log('sceneryColor', sceneryColor);
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
 
@@ -271,8 +273,12 @@ const renderGameFrame = () => {
             t,
         };
 
-        // sceneryColor = currentPhase.colors.background;
-
+        const colors = interpolateObjects(
+            lastPhase.colors,
+            currentPhase.colors,
+            t
+        );
+        sceneryColor = colors.background;
         // --------------------------
         // --   DRAW SEGMENTS    --
         // --------------------------
@@ -295,6 +301,7 @@ const renderGameFrame = () => {
                         roadParam.length - render.depthOfField, //finishStart
                 absoluteIndex: absoluteIndex,
                 currentStage: currentStage,
+                colors: colors,
             });
         }
 

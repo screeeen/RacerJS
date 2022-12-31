@@ -16,58 +16,19 @@ export const drawSegment = ({
     finishStart,
     absoluteIndex,
     currentStage,
+    colors,
 }) => {
-    // const stages = getStages(alternate);
-
-    // const getInterpolationRange = (stages, absoluteIndex, STAGESLENGTH) => {
-    //     let currentPhasePosition = Math.floor(absoluteIndex / STAGESLENGTH) + 1;
-    //     let lastPhasePosition = currentPhasePosition - 1;
-
-    //     const currentPhase = stages[currentPhasePosition]
-    //         ? stages[currentPhasePosition]
-    //         : stages[0];
-    //     const lastPhase = stages[lastPhasePosition]
-    //         ? stages[lastPhasePosition]
-    //         : stages[0];
-
-    //     const startIndex = currentPhase.startIndex;
-    //     const endIndex = currentPhase.endIndex;
-
-    //     let t = 0;
-    //     if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
-    //         t = (absoluteIndex - startIndex) / (endIndex - startIndex);
-    //     }
-
-    //     drawString({
-    //         string: '' + 'stage ' + currentPhasePosition,
-    //         pos: { x: 2, y: 10 },
-    //     });
-
-    //     return {
-    //         currentPhase,
-    //         lastPhase,
-    //         t,
-    //     };
-    // };
-
-    // const currentStage = getInterpolationRange(
-    //     stages,
-    //     absoluteIndex,
-    //     STAGESLENGTH
-    // );
-    // console.log('currentStage', currentStage)
-
-    let color = {};
+    // let color = {};
 
     // Color de la carretera en la fase actual
-    color = interpolateObjects(
-        currentStage.lastPhase.colors,
-        currentStage.currentPhase.colors,
-        currentStage.t
-    );
+    // color = interpolateObjects(
+    //     currentStage.lastPhase.colors,
+    //     currentStage.currentPhase.colors,
+    //     currentStage.t
+    // );
 
     //draw grass:
-    context.fillStyle = color.grass;
+    context.fillStyle = colors.grass;
     context.fillRect(0, position2, render.width, position1 - position2);
 
     // draw the road
@@ -80,7 +41,7 @@ export const drawSegment = ({
         offset2,
         -0.5, // ancho carriles
         0.5, // ancho carriles
-        color.road
+        colors.road
     );
 
     // draw the road border
@@ -93,7 +54,7 @@ export const drawSegment = ({
         offset2,
         -0.5,
         -0.47,
-        color.border
+        colors.border
     );
 
     drawTrapez(
@@ -105,7 +66,7 @@ export const drawSegment = ({
         offset2,
         0.47,
         0.5,
-        color.border
+        colors.border
     );
 
     // draw the lane line
@@ -118,7 +79,7 @@ export const drawSegment = ({
         offset2,
         -0.18,
         -0.15,
-        color.lane
+        colors.lane
     );
     drawTrapez(
         position1,
@@ -129,6 +90,6 @@ export const drawSegment = ({
         offset2,
         0.15,
         0.18,
-        color.lane
+        colors.lane
     );
 };
