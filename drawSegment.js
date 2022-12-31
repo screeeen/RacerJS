@@ -5,7 +5,7 @@ import { rgbToHex, interpolateObjects } from './utils.js';
 import { getStages, STAGESLENGTH } from './src/stages.js';
 import { drawString } from './drawString.js';
 
-export const drawSegment = (
+export const drawSegment = ({
     position1,
     scale1,
     offset1,
@@ -14,46 +14,47 @@ export const drawSegment = (
     offset2,
     alternate,
     finishStart,
-    absoluteIndex
-) => {
-    const stages = getStages(alternate);
+    absoluteIndex,
+    currentStage,
+}) => {
+    // const stages = getStages(alternate);
 
-    const getInterpolationRange = (stages, absoluteIndex, STAGESLENGTH) => {
-        let currentPhasePosition = Math.floor(absoluteIndex / STAGESLENGTH) + 1;
-        let lastPhasePosition = currentPhasePosition - 1;
+    // const getInterpolationRange = (stages, absoluteIndex, STAGESLENGTH) => {
+    //     let currentPhasePosition = Math.floor(absoluteIndex / STAGESLENGTH) + 1;
+    //     let lastPhasePosition = currentPhasePosition - 1;
 
-        const currentPhase = stages[currentPhasePosition]
-            ? stages[currentPhasePosition]
-            : stages[0];
-        const lastPhase = stages[lastPhasePosition]
-            ? stages[lastPhasePosition]
-            : stages[0];
+    //     const currentPhase = stages[currentPhasePosition]
+    //         ? stages[currentPhasePosition]
+    //         : stages[0];
+    //     const lastPhase = stages[lastPhasePosition]
+    //         ? stages[lastPhasePosition]
+    //         : stages[0];
 
-        const startIndex = currentPhase.startIndex;
-        const endIndex = currentPhase.endIndex;
+    //     const startIndex = currentPhase.startIndex;
+    //     const endIndex = currentPhase.endIndex;
 
-        let t = 0;
-        if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
-            t = (absoluteIndex - startIndex) / (endIndex - startIndex);
-        }
+    //     let t = 0;
+    //     if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
+    //         t = (absoluteIndex - startIndex) / (endIndex - startIndex);
+    //     }
 
-        drawString({
-            string: '' + 'stage ' + currentPhasePosition,
-            pos: { x: 2, y: 10 },
-        });
+    //     drawString({
+    //         string: '' + 'stage ' + currentPhasePosition,
+    //         pos: { x: 2, y: 10 },
+    //     });
 
-        return {
-            currentPhase,
-            lastPhase,
-            t,
-        };
-    };
+    //     return {
+    //         currentPhase,
+    //         lastPhase,
+    //         t,
+    //     };
+    // };
 
-    const currentStage = getInterpolationRange(
-        stages,
-        absoluteIndex,
-        STAGESLENGTH
-    );
+    // const currentStage = getInterpolationRange(
+    //     stages,
+    //     absoluteIndex,
+    //     STAGESLENGTH
+    // );
     // console.log('currentStage', currentStage)
 
     let color = {};
