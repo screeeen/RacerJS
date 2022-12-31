@@ -1,10 +1,15 @@
+export const STAGESLENGTH = 400;
+
+//TODO: Multiplicador para startIndex + endIndex
+
 export const getStages = (alternate) => [
     {
         position: 0,
         name: 'normal',
         startIndex: 0,
-        endIndex: 100,
+        endIndex: 400,
         colors: {
+            background: [10, 10, 200],
             grass: alternate ? [136, 136, 136] : [102, 102, 102],
             border: alternate ? [238, 238, 238] : [204, 204, 204],
             road: alternate ? [34, 34, 34] : [68, 68, 68],
@@ -14,9 +19,10 @@ export const getStages = (alternate) => [
     {
         position: 1,
         name: 'sandy',
-        startIndex: 90,
-        endIndex: 100,
+        startIndex: 300,
+        endIndex: 400,
         colors: {
+            background: [0, 200, 0],
             grass: [231, 224, 204],
             road: [212, 201, 166],
             lane: [212, 201, 166],
@@ -26,9 +32,10 @@ export const getStages = (alternate) => [
     {
         position: 2,
         name: 'water',
-        startIndex: 190,
-        endIndex: 200,
+        startIndex: 700,
+        endIndex: 800,
         colors: {
+            background: [0, 0, 255],
             grass: [0, 0, 204],
             road: [212, 201, 166],
             lane: [212, 201, 166],
@@ -38,13 +45,14 @@ export const getStages = (alternate) => [
     {
         position: 3,
         name: 'rocky',
-        startIndex: 290,
-        endIndex: 300,
+        startIndex: 1190,
+        endIndex: 1200,
         colors: {
+            background: [200, 0, 0],
             grass: alternate ? [10, 10, 10] : [0, 10, 102],
             border: alternate ? [0, 0, 0] : [200, 200, 200],
             road: alternate ? [34, 34, 34] : [68, 68, 68],
             lane: alternate ? [170, 170, 170] : [238, 238, 238],
         },
     },
-]
+];

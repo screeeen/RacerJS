@@ -22,6 +22,7 @@ import { drawImage } from './drawImage.js'
 import { drawSprite } from './drawSprite.js'
 import { drawBackground } from './drawBackground.js'
 import { renderSplashFrame } from './src/renderSplashFrame.js'
+import { STAGESLENGTH } from './src/stages.js'
 
 const r = Math.random
 
@@ -43,14 +44,6 @@ export const printa = ({ currentTime, timer }) => {
     if (!entrada && !printing) {
         entrada = currentTime.getTime()
     }
-    // console.log('salida < entrada', salida < entrada);
-
-    // console.log('entrada', entrada)
-    // console.log('salida', salida)
-
-    // var min = Math.floor(diff / 60000);
-    // var sec = Math.floor((diff - min * 60000) / 1000);
-    // if (sec < 10) sec = "0" + sec;
 
     if (salida > entrada) {
         let t = currentTime.getTime()
@@ -68,7 +61,6 @@ export const road = []
 
 const roadSegmentSize = 5
 const numberOfSegmentPerColor = 4
-const stageLength = 100
 
 let lastDelta = 0
 let splashInterval
@@ -91,14 +83,7 @@ const init = () => {
     })
 
     generateRoad()
-    // generateBumpyRoad()
-    //   let data = JSON.stringify(road);
-    //   navigator.clipboard
-    // .writeText(data)
-    // .then(
-    //   // (clipText) => (document.querySelector(".editor").innerText += clipText)
-    //   console.log('copied')
-    // );
+
     console.log('road', road)
 }
 
@@ -170,7 +155,7 @@ const renderGameFrame = () => {
     // --------------------------
     let absoluteIndex = Math.floor(player.position / roadSegmentSize)
     const CHECKPOINT_PHASE =
-        absoluteIndex > stageLength && absoluteIndex < stageLength + 100
+        absoluteIndex > STAGESLENGTH && absoluteIndex < STAGESLENGTH + 100
 
     //CHECKPOINT
     if (CHECKPOINT_PHASE) {
@@ -204,8 +189,6 @@ const renderGameFrame = () => {
     let lastProjectedHeight = Number.POSITIVE_INFINITY
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor) // for alternating color band
 
-    // console.log("currentSegment", currentSegmentIndex);
-
     let playerPosSegmentHeight = road[absoluteIndex % road.length].height
     let playerPosNextSegmentHeight =
         road[(absoluteIndex + 1) % road.length].height
@@ -216,11 +199,6 @@ const renderGameFrame = () => {
         playerPosSegmentHeight +
         (playerPosNextSegmentHeight - playerPosSegmentHeight) *
             playerPosRelative
-
-    // console.log("playerPosSegmentHeight", playerPosSegmentHeight);
-    // console.log("playerPosNextSegmentHeight", playerPosNextSegmentHeight);
-    // console.log("playerPosRelative", playerPosRelative);
-    // console.log("playerHeight", playerHeight);
 
     let baseOffset =
         currentSegment.curve +
@@ -270,7 +248,7 @@ const renderGameFrame = () => {
                     currentSegmentIndex ==
                         roadParam.length - render.depthOfField, //finishStart
                 absoluteIndex,
-                stageLength
+                STAGESLENGTH
             )
         }
 
@@ -344,15 +322,10 @@ const renderGameFrame = () => {
 
     ///////// TIMER /////////
     let now = new Date()
-
     let diff = now.getTime() - startTime.getTime()
-
     let min = Math.floor(diff / 60000)
-
     let sec = Math.floor((diff - min * 60000) / 1000)
-
     if (sec < 10) sec = '0' + sec
-
     let mili = Math.floor(diff - min * 60000 - sec * 1000)
     if (mili < 100) mili = '0' + mili
     if (mili < 10) mili = '0' + mili
