@@ -22,11 +22,10 @@ import { drawImage } from './drawImage.js';
 import { drawSprite } from './drawSprite.js';
 import { drawBackground } from './drawBackground.js';
 import { renderSplashFrame } from './src/renderSplashFrame.js';
-import { getStages, STAGESLENGTH } from './src/stages.js';
+import { getStages } from './src/stages.js';
 import { getBackgroundColor } from './src/getBackgroundColor.js';
 import { interpolateObjects, rgbToHex } from './utils.js';
-
-const r = Math.random;
+import { r } from '../utils.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -93,7 +92,7 @@ const init = () => {
 //renders one frame
 const renderGameFrame = () => {
     // Clean screen
-    console.log('sceneryColor', sceneryColor);
+    // console.log('sceneryColor', sceneryColor);
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
 
@@ -159,7 +158,8 @@ const renderGameFrame = () => {
     // --------------------------
     let absoluteIndex = Math.floor(player.position / roadSegmentSize);
     const CHECKPOINT_PHASE =
-        absoluteIndex > STAGESLENGTH && absoluteIndex < STAGESLENGTH + 100;
+        absoluteIndex > roadParam.STAGESLENGTH &&
+        absoluteIndex < roadParam.STAGESLENGTH + 100;
 
     //CHECKPOINT
     if (CHECKPOINT_PHASE) {
@@ -244,7 +244,8 @@ const renderGameFrame = () => {
         // --------------------------
         const stages = getStages(counter < numberOfSegmentPerColor);
 
-        let currentPhasePosition = Math.floor(absoluteIndex / STAGESLENGTH) + 1;
+        let currentPhasePosition =
+            Math.floor(absoluteIndex / roadParam.STAGESLENGTH) + 1;
         let lastPhasePosition = currentPhasePosition - 1;
 
         const currentPhase = stages[currentPhasePosition]
@@ -278,6 +279,7 @@ const renderGameFrame = () => {
             currentPhase.colors,
             t
         );
+
         sceneryColor = colors.background;
         // --------------------------
         // --   DRAW SEGMENTS    --
@@ -294,24 +296,25 @@ const renderGameFrame = () => {
                 scale2: endScaling, //scale
                 offset2:
                     nextSegment.curve - baseOffset - lastDelta * endScaling, //offset
-                alternate: counter < numberOfSegmentPerColor, //alternate
-                finishStart:
-                    currentSegmentIndex == 2 ||
-                    currentSegmentIndex ==
-                        roadParam.length - render.depthOfField, //finishStart
-                absoluteIndex: absoluteIndex,
-                currentStage: currentStage,
                 colors: colors,
             });
         }
 
+        // --------------------------
+        // --   DRAW SPRITES    --
+        // --------------------------
+        console.log(
+            'currentSegment',
+            currentSegmentIndex,
+            currentSegment.stage
+        );
         if (currentSegment.sprite) {
             spriteBuffer.push({
                 y: render.height / 2 + startProjectedHeight,
                 x:
                     render.width / 2 -
                     currentSegment.sprite.pos * render.width * currentScaling +
-                    /* */ currentSegment.curve -
+                    currentSegment.curve -
                     baseOffset -
                     (player.posx - baseOffset * 2) * currentScaling,
                 ymax: render.height / 2 + lastProjectedHeight,
@@ -321,12 +324,8 @@ const renderGameFrame = () => {
         }
 
         lastProjectedHeight = currentHeight;
-
-        const probedDepth = currentSegmentPosition;
-
         currentSegmentIndex = nextSegmentIndex;
         currentSegment = nextSegment;
-
         currentSegmentPosition += roadSegmentSize;
 
         counter = (counter + 1) % (2 * numberOfSegmentPerColor);
@@ -404,7 +403,7 @@ const start = () => {
     spritesheet.onload = function () {
         init();
         splashInterval = setInterval(splashScreen, 60);
-        console.log('splashInterval', splashInterval);
+        // console.log('splashInterval', splashInterval);
     };
     spritesheet.src = 'spritesheet.high.bw.png';
 };

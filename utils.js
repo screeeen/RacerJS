@@ -12,6 +12,8 @@ export const rgbToHex = (r, g, b) => {
     );
 };
 
+export const r = Math.random;
+
 export const interpolateObjects = (start, end, t) => {
     const result = {};
     Object.keys(start).forEach((key) => {

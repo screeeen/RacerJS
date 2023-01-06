@@ -1,13 +1,16 @@
 import { getBackgroundColor } from './getBackgroundColor.js';
 
 export const roadParam = {
-    maxHeight: 900,
-    maxCurve: 200,
-    length: 22, // largo de toda la pista
     curvy: 0.8,
     mountainy: 0.8,
-    zoneSize: 250,
+    maxHeight: 900,
+    maxCurve: 200,
+    STAGESLENGTH: 400,
+    zoneSection: 400,
+    length: 4, // largo de toda la pista
 };
+
+// length son zones 21 (tiene zoneSection 400)
 
 export const render = {
     width: 320,

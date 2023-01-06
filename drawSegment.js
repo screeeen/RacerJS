@@ -2,8 +2,9 @@ import { context } from './racer.js';
 import { render } from './src/gameElements.js';
 import { drawTrapez } from './drawTrapez.js';
 import { rgbToHex, interpolateObjects } from './utils.js';
-import { getStages, STAGESLENGTH } from './src/stages.js';
+import { getStages } from './src/stages.js';
 import { drawString } from './drawString.js';
+import { roadParam } from './src/gameElements.js';
 
 export const drawSegment = ({
     position1,
@@ -12,21 +13,8 @@ export const drawSegment = ({
     position2,
     scale2,
     offset2,
-    alternate,
-    finishStart,
-    absoluteIndex,
-    currentStage,
     colors,
 }) => {
-    // let color = {};
-
-    // Color de la carretera en la fase actual
-    // color = interpolateObjects(
-    //     currentStage.lastPhase.colors,
-    //     currentStage.currentPhase.colors,
-    //     currentStage.t
-    // );
-
     //draw grass:
     context.fillStyle = colors.grass;
     context.fillRect(0, position2, render.width, position1 - position2);

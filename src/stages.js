@@ -1,4 +1,4 @@
-export const STAGESLENGTH = 400;
+// export const STAGESLENGTH = 400;
 
 //TODO: Multiplicador para startIndex + endIndex
 
