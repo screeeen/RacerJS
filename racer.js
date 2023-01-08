@@ -1,20 +1,18 @@
-import { generateRoad } from './src/generateRoad.js';
+import {
+    generateRoad,
+    road,
+    roadSegmentSize,
+    numberOfSegmentPerColor,
+} from './src/generateRoad.js';
 import {
     car,
     car_4,
     car_8,
-    background,
-    tree,
-    rock,
-    bridge,
-    house,
-    logo,
-    backgroundColor,
     render,
     roadParam,
     player,
 } from './src/gameElements.js';
-import { generateBumpyRoad } from './src/generateBumpyRoad.js';
+// import { generateBumpyRoad } from './src/generateBumpyRoad.js';
 import { resize } from './resize.js';
 import { drawString } from './drawString.js';
 import { drawSegment } from './drawSegment.js';
@@ -58,10 +56,6 @@ export const printa = ({ currentTime, timer }) => {
 
 export const spritesheet = new Image();
 export const keys = []; // teclas
-export const road = [];
-
-const roadSegmentSize = 5;
-const numberOfSegmentPerColor = 4;
 
 let lastDelta = 0;
 let splashInterval;
@@ -92,7 +86,6 @@ const init = () => {
 //renders one frame
 const renderGameFrame = () => {
     // Clean screen
-    // console.log('sceneryColor', sceneryColor);
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
 
@@ -161,29 +154,22 @@ const renderGameFrame = () => {
         absoluteIndex > roadParam.STAGESLENGTH &&
         absoluteIndex < roadParam.STAGESLENGTH + 100;
 
-    //CHECKPOINT
+    // --------------------------
+    // --   Checkpoint!   --
+    // --------------------------
     if (CHECKPOINT_PHASE) {
         drawString({ string: 'Checkpoint ', pos: { x: 100, y: 20 }, time: 10 });
     }
 
-    //FINISH GAME
+    // --------------------------
+    // --   Finish!   --
+    // --------------------------
     if (absoluteIndex >= roadParam.length - render.depthOfField - 1) {
         drawString(
             'gameInterval ' + gameInterval + '\nabsoluteIndex ' + absoluteIndex,
             { x: 100, y: 20 }
         );
         clearInterval(gameInterval);
-
-        // drawString("Press t to tweet your time.", { x: 30, y: 30 });
-        // $(window).keydown(function (e) {
-        //   if (e.keyCode == 84) {
-        //     location.href =
-        //       "http://twitter.com/home?status=" +
-        //       escape(
-        //         "I've just raced through #racer10k in " + currentTimeString + "!"
-        //       );
-        //   }
-        // });
     }
 
     let currentSegmentIndex = (absoluteIndex - 2) % road.length;

@@ -1,7 +1,9 @@
 import { roadParam, house, rock, bridge, tree } from './gameElements.js';
-import { road } from '../racer.js';
+// import { road } from '../racer.js';
 import { r } from '../utils.js';
-
+export const road = [];
+export const roadSegmentSize = 5;
+export const numberOfSegmentPerColor = 4;
 // -------------------------------------
 // ---  Generates the road randomly  ---
 // -------------------------------------
@@ -67,18 +69,11 @@ export const generateRoad = () => {
             // -- PROPS AND SPRITES!   --
             // --------------------------
             let sprite = false;
-            const currentStage = (zones + 1) % roadParam.length; // solo para debug
+            const currentStage = roadParam.length - zones; // solo para debug
 
             // separar por stage
-            // const CASAS = zones > 19 && zones <= 21;
-
             const CASAS = currentStage === 1;
-            console.log('** CASAS', CASAS);
-
-            // const PUENTES = zones > 18 && zones <= 19;
             const PUENTES = currentStage === 2;
-
-            // const DESIERTO = zones >= 6 && zones <= 18;
             const DESIERTO = currentStage === 3;
 
             const freqCasas = 20;
@@ -105,11 +100,6 @@ export const generateRoad = () => {
             } else {
                 sprite = false;
             }
-
-            // debugger;
-
-            // console.log('1*** finalHeight',finalHeight)
-            // console.log('1*** currentStateH',currentStateH)
 
             road.push({
                 height:
