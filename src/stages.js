@@ -1,7 +1,3 @@
-// export const STAGESLENGTH = 400;
-
-//TODO: Multiplicador para startIndex + endIndex
-
 export const getStages = (alternate) => [
     {
         position: 0,

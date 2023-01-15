@@ -23,8 +23,7 @@ import { renderSplashFrame } from './src/renderSplashFrame.js';
 import { getStages } from './src/stages.js';
 import { getBackgroundColor } from './src/getBackgroundColor.js';
 import { interpolateObjects, rgbToHex } from './utils.js';
-import { r } from '../utils.js';
-
+import { generateAudio } from './audio.js';
 // -----------------------------
 // ---  closure scoped vars  ---
 // -----------------------------
@@ -61,6 +60,8 @@ let lastDelta = 0;
 let splashInterval;
 let gameInterval;
 let sceneryColor = getBackgroundColor();
+// Obtener una instancia del contexto de audio
+const audioContext = new AudioContext();
 
 //initialize the game
 const init = () => {
@@ -102,6 +103,7 @@ const renderGameFrame = () => {
             // 38 up
             //player.position += 0.1;
             player.speed += player.acceleration;
+            generateAudio(audioContext);
         } else if (keys[40]) {
             // 40 down
             player.speed -= player.breaking;
@@ -254,11 +256,7 @@ const renderGameFrame = () => {
             pos: { x: 2, y: 10 },
         });
 
-        const currentStage = {
-            currentPhase,
-            lastPhase,
-            t,
-        };
+        console.log('currentPhase', currentPhase);
 
         const colors = interpolateObjects(
             lastPhase.colors,
