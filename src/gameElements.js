@@ -15,8 +15,10 @@ export const roadParam = {
 export const render = {
     width: 320,
     height: 240,
+    leftRoadBound: -0.5,
+    rightRoadBound: 0.5,
     depthOfField: 150,
-    camera_distance: 30,
+    camera_distance: 20,
     camera_height: 100,
 };
 

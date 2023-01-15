@@ -27,8 +27,8 @@ export const drawSegment = ({
         position2,
         scale2,
         offset2,
-        -0.5, // ancho carriles
-        0.5, // ancho carriles
+        render.leftRoadBound, //-0.5, // ancho carriles
+        render.rightRoadBound, //0.5, // ancho carriles
         colors.road
     );
 
@@ -69,6 +69,20 @@ export const drawSegment = ({
         -0.15,
         colors.lane
     );
+
+    // draw the other lane line
+    // drawTrapez(
+    //     position1,
+    //     scale1,
+    //     offset1,
+    //     position2,
+    //     scale2,
+    //     offset2,
+    //     -0.1,
+    //     -0.3,
+    //     colors.lane
+    // );
+
     drawTrapez(
         position1,
         scale1,

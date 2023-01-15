@@ -89,8 +89,8 @@ export const generateRoad = () => {
             // console.log(i, zones, CASAS, PUENTES, DESIERTO);
             if (CASAS && i % freqCasas === 0) {
                 const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
-                // sprite = { type: house, pos: chosenValue }; //0.55 best for left
-                sprite = { type: palm, pos: chosenValue }; //0.55 best for left
+                sprite = { type: house, pos: chosenValue }; //0.55 best for left
+                // sprite = { type: palm, pos: chosenValue }; //0.55 best for left
             } else if (PUENTES && i % freqPuentes === 0) {
                 sprite = { type: bridge, pos: 0.8 };
             } else if (DESIERTO && freqCactus) {
