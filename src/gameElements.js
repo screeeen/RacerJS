@@ -65,6 +65,13 @@ export const tree = {
     h: 32,
 };
 
+export const palm = {
+    x: 416,
+    y: 41,
+    w: 24,
+    h: 56,
+};
+
 export const rock = {
     x: 345,
     y: 9,

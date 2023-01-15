@@ -1,4 +1,4 @@
-import { roadParam, house, rock, bridge, tree } from './gameElements.js';
+import { roadParam, house, rock, palm, bridge, tree } from './gameElements.js';
 // import { road } from '../racer.js';
 import { r } from '../utils.js';
 export const road = [];
@@ -75,6 +75,7 @@ export const generateRoad = () => {
             const CASAS = currentStage === 1;
             const PUENTES = currentStage === 2;
             const DESIERTO = currentStage === 3;
+            const PALMERAS = currentStage === 4;
 
             const freqCasas = 20;
             const freqPuentes = 4;
@@ -88,7 +89,8 @@ export const generateRoad = () => {
             // console.log(i, zones, CASAS, PUENTES, DESIERTO);
             if (CASAS && i % freqCasas === 0) {
                 const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
-                sprite = { type: house, pos: chosenValue }; //0.55 best for left
+                // sprite = { type: house, pos: chosenValue }; //0.55 best for left
+                sprite = { type: palm, pos: chosenValue }; //0.55 best for left
             } else if (PUENTES && i % freqPuentes === 0) {
                 sprite = { type: bridge, pos: 0.8 };
             } else if (DESIERTO && freqCactus) {
