@@ -79,6 +79,7 @@ export const generateRoad = () => {
 
             const freqCasas = 20;
             const freqPuentes = 4;
+            const freqPalmeras = 2;
             const freqCactus = r() < 0.09;
 
             console.log('zoneSection', i);
@@ -87,12 +88,13 @@ export const generateRoad = () => {
             console.log('stage', Math.round(roadParam.length / (zones + 1)));
 
             // console.log(i, zones, CASAS, PUENTES, DESIERTO);
+            const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
             if (CASAS && i % freqCasas === 0) {
-                const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
                 sprite = { type: house, pos: chosenValue }; //0.55 best for left
-                // sprite = { type: palm, pos: chosenValue }; //0.55 best for left
             } else if (PUENTES && i % freqPuentes === 0) {
                 sprite = { type: bridge, pos: 0.8 };
+            } else if (PALMERAS && i % freqPalmeras === 0) {
+                sprite = { type: palm, pos: chosenValue }; //0.55 best for left
             } else if (DESIERTO && freqCactus) {
                 var spriteType = [tree, rock][Math.floor(r() * 1.9)];
                 sprite = { type: spriteType, pos: 0.9 + 4 * r() };

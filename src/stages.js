@@ -9,7 +9,7 @@ export const getStages = (alternate) => [
         startIndex: 0,
         endIndex: 400,
         colors: {
-            background: [136, 136, 236],
+            background: [136, 136, 136],
             grass: alternate ? [136, 136, 136] : [102, 102, 102],
             border: alternate ? [238, 238, 238] : [204, 204, 204],
             road: alternate ? [34, 34, 34] : [68, 68, 68],
@@ -19,10 +19,10 @@ export const getStages = (alternate) => [
     {
         position: 1,
         name: 'sandy',
-        startIndex: 300,
+        startIndex: 100,
         endIndex: 400,
         colors: {
-            background: [231, 224, 255],
+            background: [231, 224, 230],
             grass: [231, 224, 204],
             road: [212, 201, 166],
             lane: [212, 201, 166],
@@ -35,8 +35,8 @@ export const getStages = (alternate) => [
         startIndex: 700,
         endIndex: 800,
         colors: {
-            background: [0, 0, 60],
-            grass: [0, 0, 204],
+            background: [194, 178, 128],
+            grass: [194, 178, 128],
             road: [212, 201, 166],
             lane: [212, 201, 166],
             border: [231, 224, 204],
@@ -53,6 +53,19 @@ export const getStages = (alternate) => [
             border: alternate ? [0, 0, 0] : [200, 200, 200],
             road: alternate ? [34, 34, 34] : [68, 68, 68],
             lane: alternate ? [170, 170, 170] : [238, 238, 238],
+        },
+    },
+    {
+        position: 4,
+        name: 'palm',
+        startIndex: 1400,
+        endIndex: 1800,
+        colors: {
+            background: [255, 0, 0],
+            grass: alternate ? [255, 10, 10] : [10, 10, 10], //: [0, 10, 102],
+            border: alternate ? [0, 0, 0] : [0, 0, 0], //: [200, 200, 200],
+            road: alternate ? [255, 34, 34] : [34, 34, 34], //: [68, 68, 68],
+            lane: alternate ? [255, 170, 170] : [170, 170, 170], //: [238, 238, 238],
         },
     },
 ];

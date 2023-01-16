@@ -7,7 +7,7 @@ export const roadParam = {
     maxCurve: 200,
     STAGESLENGTH: 400,
     zoneSection: 400,
-    length: 4, // largo de toda la pista
+    length: 5, // largo de toda la pista
 };
 
 // length son zones 21 (tiene zoneSection 400)
