@@ -144,7 +144,7 @@ const renderGameFrame = () => {
     }
 
     const spriteBuffer = [];
-    drawBackground(-player.posx);
+    drawBackground(player);
 
     // --------------------------
     // --   Render the road    --

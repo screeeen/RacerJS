@@ -53,11 +53,18 @@ export const car_8 = {
     h: 38,
 };
 
-export const background = {
+export const topclouds = {
     x: 0,
     y: 9,
     w: 320,
-    h: 120,
+    h: 80,
+};
+
+export const background = {
+    x: 0,
+    y: 89,
+    w: 320,
+    h: 40,
 };
 
 export const tree = {
