@@ -1,5 +1,5 @@
 import { roadParam, house, rock, bridge, tree } from './gameElements.js';
-import { road } from '../racer.js';
+// import { road } from '../racer.js';
 
 export const generateBumpyRoad = () => {
     const r = Math.random;

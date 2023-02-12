@@ -80,7 +80,7 @@ const init = () => {
 
     generateRoad();
 
-    console.log('road', road);
+    // console.log('road', road);
 };
 
 //renders one frame
@@ -144,7 +144,6 @@ const renderGameFrame = () => {
     }
 
     const spriteBuffer = [];
-    drawBackground(player);
 
     // --------------------------
     // --   Render the road    --
@@ -176,6 +175,10 @@ const renderGameFrame = () => {
     let currentSegmentPosition =
         (absoluteIndex - 2) * roadSegmentSize - player.position;
     let currentSegment = road[currentSegmentIndex];
+
+    // Drawing the background
+    drawBackground(currentSegment.curve);
+
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
 
@@ -289,11 +292,11 @@ const renderGameFrame = () => {
         // --------------------------
         // --   DRAW SPRITES    --
         // --------------------------
-        console.log(
-            'currentSegment',
-            currentSegmentIndex,
-            currentSegment.stage
-        );
+        // console.log(
+        //     'currentSegment',
+        //     currentSegmentIndex,
+        //     currentSegment.stage
+        // );
         if (currentSegment.sprite) {
             spriteBuffer.push({
                 y: render.height / 2 + startProjectedHeight,
