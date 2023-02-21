@@ -1,16 +1,16 @@
-import {render} from './src/gameElements.js'
+import { render } from './gameElements.js';
 
-export const resize =  () => {
+export const resize = () => {
     if (window.innerWidth / window.innerHeight > render.width / render.height) {
-      var scale = window.innerHeight / render.height;
+        var scale = window.innerHeight / render.height;
     } else {
-      var scale = window.innerWidth / render.width;
+        var scale = window.innerWidth / render.width;
     }
 
     // var transform = "scale(" + scale + ")";
     // const element = document.getElementById('c');
     // console.log(element)
-    // element 
+    // element
     //   .css("MozTransform", transform)
     //   .css("transform", transform)
     //   .css("WebkitTransform", transform)
@@ -20,4 +20,4 @@ export const resize =  () => {
     //       ((scale - 1) * render.width) / 2 +
     //       (window.innerWidth - render.width * scale) / 2,
     //   });
-  };
+};

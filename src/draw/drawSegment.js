@@ -1,10 +1,10 @@
-import { context } from './racer.js';
-import { render } from './src/gameElements.js';
+import { context } from '../racer.js';
+import { render } from '../gameElements.js';
 import { drawTrapez } from './drawTrapez.js';
-import { rgbToHex, interpolateObjects } from './utils.js';
-import { getStages } from './src/stages.js';
-import { drawString } from './drawString.js';
-import { roadParam } from './src/gameElements.js';
+// import { rgbToHex, interpolateObjects } from '../utils.js';
+// import { getStages } from '../stages.js';
+// import { drawString } from './drawString.js';
+// import { roadParam } from '../generateRoad';
 
 export const drawSegment = ({
     position1,

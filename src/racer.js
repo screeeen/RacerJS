@@ -3,27 +3,20 @@ import {
     road,
     roadSegmentSize,
     numberOfSegmentPerColor,
-} from './src/generateRoad.js';
-import {
-    car,
-    car_4,
-    car_8,
-    render,
-    roadParam,
-    player,
-} from './src/gameElements.js';
+} from './generateRoad.js';
+import { car, car_4, car_8, render, player } from './gameElements.js';
+import { roadParam } from './generateRoad.js';
 // import { generateBumpyRoad } from './src/generateBumpyRoad.js';
 import { resize } from './resize.js';
-import { drawString } from './drawString.js';
-import { drawSegment } from './drawSegment.js';
-import { drawImage } from './drawImage.js';
-import { drawSprite } from './drawSprite.js';
-import { drawBackground } from './drawBackground.js';
-import { renderSplashFrame } from './src/renderSplashFrame.js';
-import { getStages } from './src/stages.js';
-import { getBackgroundColor } from './src/getBackgroundColor.js';
+import { drawString } from './draw/drawString.js';
+import { drawSegment } from './draw/drawSegment.js';
+import { drawImage } from './draw/drawImage.js';
+import { drawSprite } from './draw/drawSprite.js';
+import { drawBackground } from './draw/drawBackground.js';
+import { renderSplashFrame } from './renderSplashFrame.js';
+import { getStages } from './stages.js';
+import { getBackgroundColor } from './getBackgroundColor.js';
 import { interpolateObjects, rgbToHex } from './utils.js';
-import { r } from '../utils.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -149,9 +142,10 @@ const renderGameFrame = () => {
     // --   Render the road    --
     // --------------------------
     let absoluteIndex = Math.floor(player.position / roadSegmentSize);
+
     const CHECKPOINT_PHASE =
-        absoluteIndex > roadParam.STAGESLENGTH &&
-        absoluteIndex < roadParam.STAGESLENGTH + 100;
+        absoluteIndex > roadParam.zoneSection &&
+        absoluteIndex < roadParam.zoneSection + 100;
 
     // --------------------------
     // --   Checkpoint!   --
@@ -228,20 +222,21 @@ const renderGameFrame = () => {
         let currentHeight = Math.min(lastProjectedHeight, startProjectedHeight);
         let currentScaling = startScaling;
 
-        // --------------------------
+        // ---------------------------
         // --   STAGES MECHANICS    --
         // --------------------------
-        const stages = getStages(counter < numberOfSegmentPerColor);
 
-        let currentPhasePosition =
-            Math.floor(absoluteIndex / roadParam.STAGESLENGTH) + 1;
-        let lastPhasePosition = currentPhasePosition - 1;
+        const stages = getStages(counter < numberOfSegmentPerColor); // que raro
 
-        const currentPhase = stages[currentPhasePosition]
-            ? stages[currentPhasePosition]
+        let currentStagePos =
+            Math.floor(absoluteIndex / roadParam.zoneSection) + 1;
+        let lastStagePos = currentStagePos - 1;
+
+        const currentPhase = stages[currentStagePos]
+            ? stages[currentStagePos]
             : stages[0];
-        const lastPhase = stages[lastPhasePosition]
-            ? stages[lastPhasePosition]
+        const lastPhase = stages[lastStagePos]
+            ? stages[lastStagePos]
             : stages[0];
 
         const startIndex = currentPhase.startIndex;
@@ -253,8 +248,13 @@ const renderGameFrame = () => {
         }
 
         drawString({
-            string: '' + 'stage ' + currentPhasePosition,
+            string: '' + 'stage ' + currentStagePos,
             pos: { x: 2, y: 10 },
+        });
+
+        drawString({
+            string: '' + 'transition ' + t.toFixed(2),
+            pos: { x: 2, y: 20 },
         });
 
         const currentStage = {

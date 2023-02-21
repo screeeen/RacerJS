@@ -1,5 +1,5 @@
 import { drawImage } from './drawImage.js';
-import { background, topclouds } from './src/gameElements.js';
+import { background, topclouds } from '../gameElements.js';
 
 const parallaxSpeed = 8;
 

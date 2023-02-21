@@ -1,4 +1,5 @@
-import { roadParam, house, rock, bridge, tree } from './gameElements.js';
+import { house, rock, bridge, tree } from './gameElements.js';
+import { roadParam } from './generateRoad.js';
 // import { road } from '../racer.js';
 
 export const generateBumpyRoad = () => {

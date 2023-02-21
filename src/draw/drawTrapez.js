@@ -1,5 +1,5 @@
-import {context} from './racer.js'
-import {render} from './src/gameElements.js'
+import { context } from '../racer.js';
+import { render } from '../gameElements.js';
 
 export const drawTrapez = (
     pos1,
@@ -11,7 +11,7 @@ export const drawTrapez = (
     delta1,
     delta2,
     color
-  ) => {
+) => {
     var demiWidth = render.width / 2;
 
     context.fillStyle = color;
@@ -22,4 +22,4 @@ export const drawTrapez = (
     context.lineTo(demiWidth + delta2 * render.width * scale1 + offset1, pos1);
     context.fill();
     // context.stroke();
-  };
+};

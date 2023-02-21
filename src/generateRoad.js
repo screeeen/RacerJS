@@ -1,9 +1,20 @@
-import { roadParam, house, rock, palm, bridge, tree } from './gameElements.js';
-// import { road } from '../racer.js';
-import { r } from '../utils.js';
+import { house, rock, palm, bridge, tree } from './gameElements.js';
+import { r } from './utils.js';
 export const road = [];
-export const roadSegmentSize = 5;
+export const roadSegmentSize = 5; // ??? roadparam.length
 export const numberOfSegmentPerColor = 4;
+
+export const roadParam = {
+    curvy: 0.8,
+    mountainy: 0.8,
+    maxHeight: 900,
+    maxCurve: 200,
+    zoneSection: 1000, // cada section es una fase! Largo fijo de cada fase, pude ser un array?
+    length: 10, // largo de toda la pista zoneSection x length
+};
+
+// length son zones 21 (tiene zoneSection 400)
+
 // -------------------------------------
 // ---  Generates the road randomly  ---
 // -------------------------------------
@@ -25,18 +36,24 @@ export const generateRoad = () => {
         [0, 2, 1],
     ];
 
-    // VALORES?
     let currentHeight = 0;
     let currentCurve = 0;
 
-    console.log('roadparam', roadParam);
+    console.log('%c Racer! ', 'background: #222; color: #bada55');
+    console.log('%c ---------------- ', 'background: #222; color: #bada55');
+    console.log('longitud de pista: roadparam.lenght', roadParam.length);
+    console.log('logitud de cada fase: zoneSection', roadParam.zoneSection);
+    console.log(
+        'roadparam.length x zoneSection',
+        roadParam.zoneSection * roadParam.length
+    );
+    console.log('%c ---------------- ', 'background: #222; color: #bada55');
 
     // ZONAS, roadParam
     let zones = roadParam.length;
 
     // debugger;
 
-    // ?? que es este --
     while (zones--) {
         let finalHeight;
         switch (currentStateH) {
@@ -69,7 +86,8 @@ export const generateRoad = () => {
             // -- PROPS AND SPRITES!   --
             // --------------------------
             let sprite = false;
-            const currentStage = roadParam.length - zones; // solo para debug
+
+            const currentStage = roadParam.length - zones; // solo para debug, se generan las stages
 
             // separar por stage
             const CASAS = currentStage === 1;
@@ -82,10 +100,10 @@ export const generateRoad = () => {
             const freqPalmeras = 2;
             const freqCactus = r() < 0.09;
 
-            console.log('zoneSection', i);
-            console.log('roadParam.length ', roadParam.length);
-            console.log('zones', zones);
-            console.log('stage', Math.round(roadParam.length / (zones + 1)));
+            // console.log('zoneSection', i);
+            // console.log('roadParam.length ', roadParam.length);
+            // console.log('zones', zones);
+            // console.log('stage', Math.round(roadParam.length / (zones + 1)));
 
             // console.log(i, zones, CASAS, PUENTES, DESIERTO);
             const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
@@ -157,13 +175,5 @@ export const generateRoad = () => {
         }
     }
 
-    // const thing = JSON.stringify(roadJson)
-    // const roadPlot = JSON.parse(thing)
-    // console.log('roadPlot',roadPlot)
-
-    // roadPlot.map(part => road.push(part))
-    // console.log('road',road)
-
     roadParam.length = roadParam.length * roadParam.zoneSection;
-    console.log('roadParam.length', roadParam.length);
 };
