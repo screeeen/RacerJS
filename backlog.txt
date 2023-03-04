@@ -1,0 +1,6 @@
+- NPCs
+- hacer un hack y poder acceder a una fase en concreto
+- colisionables, pintar carriles
+- fases irregulares de logitud, zoneSection en generateRoad
+- cambio de decorado-background por fase
+- particulas, como polvo en las ruedas

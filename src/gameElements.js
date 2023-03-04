@@ -18,7 +18,7 @@ export const player = {
     breaking: 0.6,
     turning: 6.0,
     posx: 0,
-    maxSpeed: 20,
+    maxSpeed: 40,
 };
 
 //sprites

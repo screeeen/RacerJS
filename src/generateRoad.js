@@ -4,16 +4,16 @@ export const road = [];
 export const roadSegmentSize = 5; // ??? roadparam.length
 export const numberOfSegmentPerColor = 4;
 
+// TODO: hacer las zonesectino variables en un array
+
 export const roadParam = {
-    curvy: 0.8,
-    mountainy: 0.8,
+    curvy: 1.8,
+    mountainy: 1.8,
     maxHeight: 900,
     maxCurve: 200,
     zoneSection: 1000, // cada section es una fase! Largo fijo de cada fase, pude ser un array?
     length: 10, // largo de toda la pista zoneSection x length
 };
-
-// length son zones 21 (tiene zoneSection 400)
 
 // -------------------------------------
 // ---  Generates the road randomly  ---
@@ -47,12 +47,9 @@ export const generateRoad = () => {
         'roadparam.length x zoneSection',
         roadParam.zoneSection * roadParam.length
     );
-    console.log('%c ---------------- ', 'background: #222; color: #bada55');
 
     // ZONAS, roadParam
     let zones = roadParam.length;
-
-    // debugger;
 
     while (zones--) {
         let finalHeight;
@@ -81,13 +78,12 @@ export const generateRoad = () => {
                 break;
         }
 
+        const currentStage = roadParam.length - zones; // solo para debug, se generan las stages
         for (var i = 0; i < roadParam.zoneSection; i++) {
             // --------------------------
             // -- PROPS AND SPRITES!   --
             // --------------------------
             let sprite = false;
-
-            const currentStage = roadParam.length - zones; // solo para debug, se generan las stages
 
             // separar por stage
             const CASAS = currentStage === 1;
@@ -96,8 +92,8 @@ export const generateRoad = () => {
             const PALMERAS = currentStage === 4;
 
             const freqCasas = 20;
-            const freqPuentes = 4;
-            const freqPalmeras = 2;
+            const freqPuentes = 10;
+            const freqPalmeras = 6;
             const freqCactus = r() < 0.09;
 
             // console.log('zoneSection', i);
@@ -106,13 +102,13 @@ export const generateRoad = () => {
             // console.log('stage', Math.round(roadParam.length / (zones + 1)));
 
             // console.log(i, zones, CASAS, PUENTES, DESIERTO);
-            const chosenValue = Math.random() < 0.5 ? -0.55 : 1.1;
+            const chosenValue = r() < 0.5 ? -0.55 : 1.1;
             if (CASAS && i % freqCasas === 0) {
                 sprite = { type: house, pos: chosenValue }; //0.55 best for left
             } else if (PUENTES && i % freqPuentes === 0) {
                 sprite = { type: bridge, pos: 0.8 };
             } else if (PALMERAS && i % freqPalmeras === 0) {
-                sprite = { type: palm, pos: chosenValue }; //0.55 best for left
+                sprite = { type: palm, pos: chosenValue * chosenValue }; //0.55 best for left
             } else if (DESIERTO && freqCactus) {
                 var spriteType = [tree, rock][Math.floor(r() * 1.9)];
                 sprite = { type: spriteType, pos: 0.9 + 4 * r() };
