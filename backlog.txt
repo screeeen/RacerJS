@@ -1,6 +1,35 @@
 - NPCs
+---- meterlo en la pipeline de sprites
+---- entender como escalan en racer 321
 - hacer un hack y poder acceder a una fase en concreto
 - colisionables, pintar carriles
 - fases irregulares de logitud, zoneSection en generateRoad
 - cambio de decorado-background por fase
 - particulas, como polvo en las ruedas
+
+
+-   funcion que lance algo en pantalla unos segundos
+-   cambiar la fuente, una para dev, otra para prod
+-   zones === stages?
+-   zones === position?
+
+
+
+function detectCollisions() {
+  npcArray.forEach(function (npc) {
+    if (
+      player.x < npc.x + npc.width &&
+      player.x + player.width > npc.x &&
+      player.y < npc.y + npc.height &&
+      player.y + player.height > npc.y
+    ) {
+      // Si hay colisión, muestra un mensaje de game over
+      alert("Game Over");
+    }
+  });
+}
+
+
+// loop
+  // Detecta colisiones
+  detectCollisions();

@@ -1,4 +1,4 @@
-import { house, rock, palm, bridge, tree } from './gameElements.js';
+import { house, rock, palm, bridge, tree, npc } from './gameElements.js';
 import { r } from './utils.js';
 export const road = [];
 export const roadSegmentSize = 5; // ??? roadparam.length
@@ -119,6 +119,15 @@ export const generateRoad = () => {
                 sprite = false;
             }
 
+            // --------------------------
+            // -- NPCS!   --
+            // --------------------------
+
+            let npcSprite = false;
+            if (CASAS && i === 30) {
+                npcSprite = { src: 'sprite_npc.png', type: npc, pos: 0 };
+            }
+
             road.push({
                 height:
                     currentHeight +
@@ -136,29 +145,17 @@ export const generateRoad = () => {
                                 (i / roadParam.zoneSection) * Math.PI -
                                     Math.PI / 2
                             )),
-                sprite: sprite,
+                sprite,
+                npcSprite,
                 stage: currentStage, // solo para debug
             });
-
-            // console.log('(finalHeight / 2)',(finalHeight / 2))
-            // console.log('i',i);
-            // console.log('(roadParam.zoneSection)',(roadParam.zoneSection));
-            // console.log('(i / roadParam.zoneSection)',((i / roadParam.zoneSection)));
-            // console.log('(1 + Math.sin((i / roadParam.zoneSection)',(Math.sin((i / roadParam.zoneSection))));
-            // console.log(' Math.PI - Math.PI / 2', Math.PI - Math.PI / 2);
-            // console.log('(1 + Math.sin((i / roadParam.zoneSection) * Math.PI - Math.PI / 2))',(1 + Math.sin((i / roadParam.zoneSection) * Math.PI - Math.PI / 2)))
         }
 
         currentHeight += finalHeight;
         currentCurve += finalCurve;
 
-        // console.log('2*** finalHeight', finalHeight)
-        // console.log('2*** currentStateH', currentStateH)
         // Find next zone
         if (r() < roadParam.mountainy) {
-            //   console.log('*** next', transitionH[currentStateH][1 + Math.round(r())])
-            //   console.log('*** calc', [1 + Math.round(r())]);
-
             currentStateH = transitionH[currentStateH][1 + Math.round(r())];
         } else {
             currentStateH = transitionH[currentStateH][0];

@@ -10,6 +10,17 @@ export const render = {
     camera_height: 100,
 };
 
+// export const npc = {
+//     position: 10,
+//     speed: 10,
+//     posx: Math.floor(Math.random() * 50),
+//     y: 130,
+//     width: 50,
+//     height: 100,
+//     // sprite: new Image(), // Tiene que estar en el spritesheet
+//     // spriteSrc: 'sprite_npc.png',
+// };
+
 export const player = {
     position: 10,
     speed: 0,
@@ -95,6 +106,13 @@ export const logo = {
     y: 39,
     w: 115,
     h: 20,
+};
+
+export const npc = {
+    x: 0,
+    y: 0,
+    w: 160,
+    h: 60,
 };
 
 export const backgroundColor = getBackgroundColor();
