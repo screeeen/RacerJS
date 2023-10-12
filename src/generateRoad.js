@@ -1,4 +1,11 @@
-import { house, rock, palm, bridge, tree, npc } from './gameElements.js';
+import {
+    house,
+    rock,
+    palm,
+    bridge,
+    tree,
+    npc_sprite_dumb_spriteSheet,
+} from './gameElements.js';
 import { r } from './utils.js';
 export const road = [];
 export const roadSegmentSize = 5; // ??? roadparam.length
@@ -123,9 +130,13 @@ export const generateRoad = () => {
             // -- NPCS!   --
             // --------------------------
 
-            let npcSprite = false;
+            let npcSpriteDumb = false;
             if (CASAS && i === 30) {
-                npcSprite = { src: 'sprite_npc.png', type: npc, pos: 0 };
+                npcSpriteDumb = {
+                    src: 'sprite_npc.png',
+                    type: npc_sprite_dumb_spriteSheet,
+                    pos: 0,
+                };
             }
 
             road.push({
@@ -146,7 +157,7 @@ export const generateRoad = () => {
                                     Math.PI / 2
                             )),
                 sprite,
-                npcSprite,
+                npcSpriteDumb,
                 stage: currentStage, // solo para debug
             });
         }

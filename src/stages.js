@@ -1,5 +1,6 @@
 //TODO: Multiplicador para startIndex + endIndex
 
+// descriptor de fases
 export const getStages = (alternate) => [
     {
         position: 0,

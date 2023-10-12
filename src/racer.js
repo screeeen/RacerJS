@@ -4,7 +4,15 @@ import {
     roadSegmentSize,
     numberOfSegmentPerColor,
 } from './generateRoad.js';
-import { car, car_4, car_8, render, player, npc } from './gameElements.js';
+import {
+    car,
+    car_4,
+    car_8,
+    render,
+    player,
+    npc,
+    npc_sprite_dumb_spriteSheet,
+} from './gameElements.js';
 import { roadParam } from './generateRoad.js';
 // import { generateBumpyRoad } from './src/generateBumpyRoad.js';
 import { resize } from './resize.js';
@@ -81,6 +89,19 @@ const renderGameFrame = () => {
     // Clean screen
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
+
+    // --------------------------
+    // -- Update the NPC state --
+    // --------------------------
+    if (Math.abs(lastDelta) > 130) {
+        if (npc.speed > 3) {
+            npc.speed -= 0.2;
+        }
+    }
+
+    npc.speed = Math.max(npc.speed, 0); //cannot go in reverse
+    npc.speed = Math.min(npc.speed, npc.maxSpeed); //maximum speed
+    npc.position += npc.speed;
 
     // --------------------------
     // -- Update the car state --
@@ -293,13 +314,8 @@ const renderGameFrame = () => {
         }
 
         // --------------------------
-        // --   DRAW SPRITES    --
+        // --   DRAW PROPS --
         // --------------------------
-        // console.log(
-        //     'currentSegment',
-        //     currentSegmentIndex,
-        //     currentSegment.stage
-        // );
         if (currentSegment.sprite) {
             spriteBuffer.push({
                 y: render.height / 2 + startProjectedHeight,
@@ -310,7 +326,7 @@ const renderGameFrame = () => {
                     baseOffset -
                     (player.posx - baseOffset * 2) * currentScaling,
                 ymax: render.height / 2 + lastProjectedHeight,
-                s: 2.5 * currentScaling,
+                s: 2.5 * currentScaling, // 2.5 es la escala de los sprites
                 i: currentSegment.sprite.type,
             });
         }
@@ -319,23 +335,24 @@ const renderGameFrame = () => {
         // --     Draw the npc     --
         // --------------------------
 
-        // console.log(currentSegment);
-        if (currentSegment.npcSprite) {
+        if (currentSegment.npcSpriteDumb) {
             npcSpriteBuffer.push({
                 y: render.height / 2 + startProjectedHeight,
                 x:
                     render.width / 2 -
-                    currentSegment.npcSprite.pos *
+                    currentSegment.npcSpriteDumb.pos *
                         render.width *
                         currentScaling +
                     currentSegment.curve -
                     baseOffset -
                     (player.posx - baseOffset * 2) * currentScaling,
                 ymax: render.height / 2 + lastProjectedHeight,
-                s: 2.5 * currentScaling, // TODO que es esto
-                i: currentSegment.npcSprite.type,
+                s: currentScaling,
+                i: currentSegment.npcSpriteDumb.type,
             });
         }
+
+        // LOOP
 
         lastProjectedHeight = currentHeight;
         currentSegmentIndex = nextSegmentIndex;
@@ -345,64 +362,55 @@ const renderGameFrame = () => {
         counter = (counter + 1) % (2 * numberOfSegmentPerColor);
     }
 
+    // pinta los sprites del decorado
     let sprite;
     while ((sprite = spriteBuffer.pop())) {
         // console.log(' * sprite', sprite);
         drawSprite(sprite);
     }
 
-    let npc;
-    while ((npc = npcSpriteBuffer.pop())) {
-        // console.log(' * npc', npc);
-        // drawImage(npc.src, npc.pos, 1, 1);
-        drawNpcSprite(npc);
+    // pinta 1 npc - testing dumb
+    let npcDumb;
+    // esta pintando el sprite dumb del npcDumb coche ahí delante
+    while ((npcDumb = npcSpriteBuffer.pop())) {
+        // console.log(' * npcDumb', npcDumb);
+        // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
+        drawNpcSprite(npcDumb);
     }
-
-    // --------------------------
-    // --     Draw the npc     --
-    // --------------------------
-    // console.log('npc', npc.position);
-    // console.log('player', player.position);
-    // // console.log(carSprite);
-
-    // // drawImage(npc.spriteSrc, npc.x, 1, 1);
-    // const img = new Image();
-    // img.src = 'sprite_npc.png';
-    // npc.position = player.position;
-
-    // context.drawImage(img, npc.posx, 130);
-
-    //     lastProjectedHeight = currentHeight;
-    //     currentSegmentIndex = nextSegmentIndex;
-    //     currentSegment = nextSegment;
-    //     currentSegmentPosition += roadSegmentSize;
-
-    //     counter = (counter + 1) % (2 * numberOfSegmentPerColor);
-    // }
-
-    // let sprite;
-    // while ((sprite = spriteBuffer.pop())) {
-    //     drawSprite(sprite);
-    // }
 
     // --------------------------
     // --     Draw the car     --
     // --------------------------
+
     drawImage(carSprite.a, carSprite.x, carSprite.y, 1);
 
     // --------------------------
     // --     Draw the npc     --
     // --------------------------
-    // console.log('npc', npc.position);
-    // console.log('player', player.position);
-    // // console.log(carSprite);
 
-    // // drawImage(npc.spriteSrc, npc.x, 1, 1);
-    // const img = new Image();
-    // img.src = 'sprite_npc.png';
-    // npc.position = player.position;
+    let npcSprite;
+    const imgCarNpc = new Image();
+    imgCarNpc.src = 'sprite_npc.png';
+    npcSprite = {
+        a: npc_sprite_dumb_spriteSheet,
+        // coordenadas del coche en la carretera
+        x: 225,
+        y: absoluteIndex - 2,
+    };
 
-    // context.drawImage(img, npc.posx, 130);
+    console.log('npcSprite', npcSprite);
+    // drawImage(imgCarNpc, npcSprite.x, npcSprite.y, 1);
+    context.drawImage(
+        imgCarNpc,
+        0,
+        0,
+        100,
+        100,
+        npcSprite.x,
+        npcSprite.y,
+        100,
+        100
+    );
 
     // --------------------------
     // --     Draw the hud     --

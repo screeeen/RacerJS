@@ -4,6 +4,7 @@ import { background, topclouds } from '../gameElements.js';
 const parallaxSpeed = 8;
 
 export const drawBackground = (curve) => {
+    // capas del background parallax
     var first = ((-curve * parallaxSpeed) / 2) % background.w;
     var second = ((-curve * parallaxSpeed) / 4) % topclouds.w;
     var third = ((-curve * parallaxSpeed) / 8) % topclouds.w;
