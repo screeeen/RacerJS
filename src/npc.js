@@ -1,8 +1,3 @@
-
-
-
-
-
 export const npc = {
         speed : 50,
         x : Math.floor(Math.random() * canvas.width),

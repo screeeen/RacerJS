@@ -25,6 +25,16 @@ import { renderSplashFrame } from './renderSplashFrame.js';
 import { getStages } from './stages.js';
 import { getBackgroundColor } from './getBackgroundColor.js';
 import { interpolateObjects, rgbToHex } from './utils.js';
+import {
+    initEngineSound,
+    updateEngineSound,
+    stopEngineSound,
+} from './audio/engineSound.js';
+import {
+    initBackgroundMusic,
+    updateBackgroundMusic,
+    stopBackgroundMusic,
+} from './audio/backgroundMusic.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -80,7 +90,6 @@ const init = () => {
     });
 
     generateRoad();
-
     // console.log('road', road);
 };
 
@@ -93,13 +102,6 @@ const renderGameFrame = () => {
     // --------------------------
     // -- Update the NPC state --
     // --------------------------
-    if (Math.abs(lastDelta) > 130) {
-        if (npc.speed > 3) {
-            npc.speed -= 0.2;
-        }
-    }
-
-    npc.speed = Math.max(npc.speed, 0); //cannot go in reverse
     npc.speed = Math.min(npc.speed, npc.maxSpeed); //maximum speed
     npc.position += npc.speed;
 
@@ -125,6 +127,16 @@ const renderGameFrame = () => {
     player.speed = Math.max(player.speed, 0); //cannot go in reverse
     player.speed = Math.min(player.speed, player.maxSpeed); //maximum speed
     player.position += player.speed;
+
+    // Update engine sound
+    updateEngineSound({
+        speed: player.speed,
+        maxSpeed: player.maxSpeed,
+        acceleration: player.acceleration,
+    });
+
+    // Update background music
+    updateBackgroundMusic('racing', player.speed, player.maxSpeed);
 
     // car turning
     let carSprite;
@@ -184,6 +196,8 @@ const renderGameFrame = () => {
             { x: 100, y: 20 }
         );
         clearInterval(gameInterval);
+        stopEngineSound();
+        updateBackgroundMusic('finish');
     }
 
     let currentSegmentIndex = (absoluteIndex - 2) % road.length;
@@ -369,15 +383,6 @@ const renderGameFrame = () => {
         drawSprite(sprite);
     }
 
-    // pinta 1 npc - testing dumb
-    let npcDumb;
-    // esta pintando el sprite dumb del npcDumb coche ahí delante
-    while ((npcDumb = npcSpriteBuffer.pop())) {
-        // console.log(' * npcDumb', npcDumb);
-        // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
-        drawNpcSprite(npcDumb);
-    }
-
     // --------------------------
     // --     Draw the car     --
     // --------------------------
@@ -388,29 +393,41 @@ const renderGameFrame = () => {
     // --     Draw the npc     --
     // --------------------------
 
-    let npcSprite;
-    const imgCarNpc = new Image();
-    imgCarNpc.src = 'sprite_npc.png';
-    npcSprite = {
-        a: npc_sprite_dumb_spriteSheet,
-        // coordenadas del coche en la carretera
-        x: 225,
-        y: absoluteIndex - 2,
-    };
+    // INTENTO 1
+    // pinta 1 npc - testing dumb
+    let npcDumb;
+    // esta pintando el sprite dumb del npcDumb coche ahí delante
+    while ((npcDumb = npcSpriteBuffer.pop())) {
+        // console.log(' * npcDumb', npcDumb);
+        // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
+        drawNpcSprite(npcDumb);
+    }
 
-    console.log('npcSprite', npcSprite);
+    // INTENTO 2
+    // let npcSprite;
+    // const imgCarNpc = new Image();
+    // imgCarNpc.src = 'sprite_npc.png';
+    // npcSprite = {
+    //     a: npc_sprite_dumb_spriteSheet,
+    //     // coordenadas del coche en la carretera
+    //     x: 125,
+    //     y: absoluteIndex - 1,
+    // };
+
+    // console.log('npcSprite', npcSprite.s);
+
     // drawImage(imgCarNpc, npcSprite.x, npcSprite.y, 1);
-    context.drawImage(
-        imgCarNpc,
-        0,
-        0,
-        100,
-        100,
-        npcSprite.x,
-        npcSprite.y,
-        100,
-        100
-    );
+    // context.drawImage(
+    //     imgCarNpc,
+    //     0,
+    //     0,
+    //     100,
+    //     100,
+    //     npcSprite.x,
+    //     npcSprite.y,
+    //     100,
+    //     100
+    // );
 
     // --------------------------
     // --     Draw the hud     --
@@ -464,6 +481,9 @@ const renderGameFrame = () => {
 const splashScreen = () => {
     renderSplashFrame();
     if (keys[32]) {
+        initEngineSound();
+        initBackgroundMusic();
+        updateBackgroundMusic('racing');
         clearInterval(splashInterval);
         gameInterval = setInterval(renderGameFrame, 24);
     }

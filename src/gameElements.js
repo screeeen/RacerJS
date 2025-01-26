@@ -12,13 +12,13 @@ export const render = {
 
 export const npc = {
     position: 12,
-    speed: 0,
+    speed: 20,
     acceleration: 0.05,
     deceleration: 0.2,
     breaking: 0.6,
     turning: 6.0,
     posx: 0,
-    maxSpeed: 40,
+    maxSpeed: 30,
     spriteSrc: 'sprite_npc.png',
 };
 

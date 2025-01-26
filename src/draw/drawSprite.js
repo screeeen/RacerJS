@@ -12,7 +12,6 @@ export const drawSprite = (sprite) => {
         h = sprite.i.h;
     }
 
-    //sprite.y - sprite.i.h * sprite.s
     if (h > 0)
         context.drawImage(
             spritesheet,
@@ -29,14 +28,28 @@ export const drawSprite = (sprite) => {
 };
 
 export const drawNpcSprite = (sprite) => {
-    // console.log(' * spr', sprite);
     // sprite
-    // i =  dimensiones de pintado h,w,x,y
-    // s = escala
-    // ymax = altura en el horizonte + el ultimo valor de altura de horizonte registrado...
+    // - sprite props -
+    // sprite i {x,y,w,h} dimensiones de pintado h,w,x,y
+    // sprite s escala
+    // sprite x
+    // sprite y
+    // sprite ymax altura en el horizonte + el ultimo valor de altura de horizonte registrado...
 
+    const escalaCoche = 0.25;
     // distancia z al player?
-    const destY = sprite.y - sprite.i.h * sprite.s;
+    let destY = sprite.y - sprite.i.h * sprite.s * escalaCoche;
+    // console.log('y', sprite.y);
+    // console.log('.s', sprite.s);
+    // console.log('sprite.y', sprite.y);
+    // console.log('factor', sprite.i.h * sprite.s * escalaCoche);
+    console.log('desty', destY);
+
+    // window.showit = () => console.log(destY);
+    // window.changeit = (val) => (destY = val);
+
+    // console.log('i.h', sprite.i.h);
+    // console.log('carSprite', carSprite);
 
     let h;
     if (sprite.ymax < sprite.y) {

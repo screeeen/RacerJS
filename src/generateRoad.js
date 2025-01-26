@@ -46,7 +46,7 @@ export const generateRoad = () => {
     let currentHeight = 0;
     let currentCurve = 0;
 
-    console.log('%c Racer! ', 'background: #222; color: #bada55');
+    console.log('%c Racer! ', 'background: #004; color: #bada55');
     console.log('%c ---------------- ', 'background: #222; color: #bada55');
     console.log('longitud de pista: roadparam.lenght', roadParam.length);
     console.log('logitud de cada fase: zoneSection', roadParam.zoneSection);
