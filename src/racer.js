@@ -31,7 +31,7 @@ import {
     stopEngineSound,
 } from './audio/engineSound.js';
 import {
-    initBackgroundMusic,
+    // initBackgroundMusic,
     updateBackgroundMusic,
     stopBackgroundMusic,
 } from './audio/backgroundMusic.js';
@@ -191,13 +191,13 @@ const renderGameFrame = () => {
     // --   Finish!   --
     // --------------------------
     if (absoluteIndex >= roadParam.length - render.depthOfField - 1) {
-        drawString(
-            'gameInterval ' + gameInterval + '\nabsoluteIndex ' + absoluteIndex,
-            { x: 100, y: 20 }
-        );
-        clearInterval(gameInterval);
-        stopEngineSound();
-        updateBackgroundMusic('finish');
+        drawString({
+            string: 'Lap completed!',
+            pos: { x: 100, y: 20 },
+        });
+        // Reset player position to start a new lap
+        player.position = 0;
+        // Keep the game running - removed clearInterval and sound stops
     }
 
     let currentSegmentIndex = (absoluteIndex - 2) % road.length;
@@ -482,7 +482,7 @@ const splashScreen = () => {
     renderSplashFrame();
     if (keys[32]) {
         initEngineSound();
-        initBackgroundMusic();
+        // initBackgroundMusic();
         updateBackgroundMusic('racing');
         clearInterval(splashInterval);
         gameInterval = setInterval(renderGameFrame, 24);

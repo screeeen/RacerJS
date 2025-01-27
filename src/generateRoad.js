@@ -58,31 +58,46 @@ export const generateRoad = () => {
     // ZONAS, roadParam
     let zones = roadParam.length;
 
+    // Store initial values to match at the end
+    const initialHeight = 0;
+    const initialCurve = 0;
+
     while (zones--) {
         let finalHeight;
-        switch (currentStateH) {
-            case 0:
-                finalHeight = 0;
-                break;
-            case 1:
-                finalHeight = roadParam.maxHeight * r();
-                break;
-            case 2:
-                finalHeight = -roadParam.maxHeight * r();
-                break;
+
+        // If this is the last zone, gradually return to initial values
+        if (zones === 0) {
+            finalHeight = -currentHeight; // This will bring us back to 0
+        } else {
+            switch (currentStateH) {
+                case 0:
+                    finalHeight = 0;
+                    break;
+                case 1:
+                    finalHeight = roadParam.maxHeight * r();
+                    break;
+                case 2:
+                    finalHeight = -roadParam.maxHeight * r();
+                    break;
+            }
         }
 
         var finalCurve;
-        switch (currentStateC) {
-            case 0:
-                finalCurve = 0;
-                break;
-            case 1:
-                finalCurve = -roadParam.maxCurve * r();
-                break;
-            case 2:
-                finalCurve = roadParam.maxCurve * r();
-                break;
+        // If this is the last zone, gradually return to initial values
+        if (zones === 0) {
+            finalCurve = -currentCurve; // This will bring us back to 0
+        } else {
+            switch (currentStateC) {
+                case 0:
+                    finalCurve = 0;
+                    break;
+                case 1:
+                    finalCurve = -roadParam.maxCurve * r();
+                    break;
+                case 2:
+                    finalCurve = roadParam.maxCurve * r();
+                    break;
+            }
         }
 
         const currentStage = roadParam.length - zones; // solo para debug, se generan las stages
@@ -103,19 +118,17 @@ export const generateRoad = () => {
             const freqPalmeras = 6;
             const freqCactus = r() < 0.09;
 
-            // console.log('zoneSection', i);
-            // console.log('roadParam.length ', roadParam.length);
-            // console.log('zones', zones);
-            // console.log('stage', Math.round(roadParam.length / (zones + 1)));
-
-            // console.log(i, zones, CASAS, PUENTES, DESIERTO);
-            const chosenValue = r() < 0.5 ? -0.55 : 1.1;
             if (CASAS && i % freqCasas === 0) {
-                sprite = { type: house, pos: chosenValue }; //0.55 best for left
+                const chosenValue = r() < 0.5 ? -0.55 : 1.1;
+                sprite = { type: house, pos: chosenValue };
             } else if (PUENTES && i % freqPuentes === 0) {
                 sprite = { type: bridge, pos: 0.8 };
             } else if (PALMERAS && i % freqPalmeras === 0) {
-                sprite = { type: palm, pos: chosenValue * chosenValue }; //0.55 best for left
+                // Alternate between left and right side of the road
+                sprite = {
+                    type: palm,
+                    pos: i % (freqPalmeras * 2) < freqPalmeras ? -0.55 : 1.1,
+                };
             } else if (DESIERTO && freqCactus) {
                 var spriteType = [tree, rock][Math.floor(r() * 1.9)];
                 sprite = { type: spriteType, pos: 0.9 + 4 * r() };
