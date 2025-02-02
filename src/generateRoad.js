@@ -14,12 +14,12 @@ export const numberOfSegmentPerColor = 4;
 // TODO: hacer las zonesectino variables en un array
 
 export const roadParam = {
-    curvy: 1.8,
-    mountainy: 1.8,
-    maxHeight: 900,
-    maxCurve: 200,
-    zoneSection: 1000, // cada section es una fase! Largo fijo de cada fase, pude ser un array?
-    length: 10, // largo de toda la pista zoneSection x length
+    curvy: 4.0, // Increased curve frequency
+    mountainy: 3.5, // Increased elevation changes
+    maxHeight: 1500, // Higher elevation changes
+    maxCurve: 400, // Sharper turns
+    zoneSection: 600, // Shorter sections for more frequent changes
+    length: 15, // Longer track for more challenge
 };
 
 // -------------------------------------
@@ -112,11 +112,13 @@ export const generateRoad = () => {
             const PUENTES = currentStage === 2;
             const DESIERTO = currentStage === 3;
             const PALMERAS = currentStage === 4;
+            const TUNEL = currentStage === 6;
 
             const freqCasas = 20;
             const freqPuentes = 10;
             const freqPalmeras = 6;
             const freqCactus = r() < 0.09;
+            const freqTunel = 4; // Frequent tunnel walls for continuous effect
 
             if (CASAS && i % freqCasas === 0) {
                 const chosenValue = r() < 0.5 ? -0.55 : 1.1;
@@ -135,6 +137,13 @@ export const generateRoad = () => {
                 if (r() < 0.5) {
                     sprite.pos = -sprite.pos;
                 }
+            } else if (TUNEL && i % freqTunel === 0) {
+                // Add tunnel walls on both sides
+                sprite = {
+                    type: house, // Using house sprite for tunnel walls
+                    pos: i % (freqTunel * 2) < freqTunel ? -0.55 : 1.1,
+                    isTunnel: true, // Mark as tunnel for special rendering
+                };
             } else {
                 sprite = false;
             }

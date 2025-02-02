@@ -8,11 +8,11 @@ let currentGear = 1;
 
 // Gear thresholds and characteristics
 const gearConfig = {
-    1: { speedThreshold: 0.2, freqMultiplier: 1.0, filterMod: 1.0 },
-    2: { speedThreshold: 0.4, freqMultiplier: 0.85, filterMod: 1.2 },
-    3: { speedThreshold: 0.6, freqMultiplier: 0.7, filterMod: 1.4 },
-    4: { speedThreshold: 0.8, freqMultiplier: 0.6, filterMod: 1.6 },
-    5: { speedThreshold: 1.0, freqMultiplier: 0.5, filterMod: 1.8 },
+    1: { speedThreshold: 0.04, freqMultiplier: 1.2, filterMod: 1.4 },
+    2: { speedThreshold: 0.12, freqMultiplier: 1.0, filterMod: 1.3 },
+    3: { speedThreshold: 0.2, freqMultiplier: 0.7, filterMod: 1.4 },
+    4: { speedThreshold: 0.6, freqMultiplier: 0.6, filterMod: 1.6 },
+    5: { speedThreshold: 0.8, freqMultiplier: 0.5, filterMod: 1.8 },
 };
 
 // Initialize audio context and nodes
@@ -46,6 +46,7 @@ export const updateEngineSound = ({ speed, maxSpeed, acceleration }) => {
     if (!audioContext) return;
 
     const speedRatio = speed / maxSpeed;
+    const isIdle = speedRatio < 0.01;
 
     // Update current gear based on speed ratio
     for (let gear = 5; gear >= 1; gear--) {
@@ -64,30 +65,33 @@ export const updateEngineSound = ({ speed, maxSpeed, acceleration }) => {
     }
 
     // Calculate base frequency based on speed and current gear
-    const minFreq = 30;
+    const minFreq = isIdle ? 25 : 30;
     const maxFreq = 200;
     const gearFreqMod = gearConfig[currentGear].freqMultiplier;
-    const frequency =
-        (minFreq + (maxFreq - minFreq) * speedRatio) * gearFreqMod;
+    const frequency = isIdle
+        ? minFreq + Math.sin(audioContext.currentTime * 2) * 2 // Add subtle fluctuation to idle sound
+        : (minFreq + (maxFreq - minFreq) * speedRatio) * gearFreqMod;
 
     // Smooth frequency transition
     oscillator.frequency.setTargetAtTime(
         frequency,
         audioContext.currentTime,
-        0.1
+        isIdle ? 0.2 : 0.1
     );
 
     // Adjust filter frequency based on acceleration and gear
     const gearFilterMod = gearConfig[currentGear].filterMod;
-    const filterFreq = (50 + speedRatio * 1000) * gearFilterMod;
+    const filterFreq = isIdle
+        ? 100 + Math.sin(audioContext.currentTime * 4) * 20 // Add character to idle sound
+        : (50 + speedRatio * 1000) * gearFilterMod;
     filterNode.frequency.setTargetAtTime(
         filterFreq,
         audioContext.currentTime,
-        0.1
+        isIdle ? 0.2 : 0.1
     );
 
     // Adjust volume based on speed
-    const volume = 0.05 + speedRatio * 0.15;
+    const volume = isIdle ? 0.25 : 0.1 + speedRatio * 0.2;
     gainNode.gain.setTargetAtTime(volume, audioContext.currentTime, 0.1);
 };
 

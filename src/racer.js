@@ -25,6 +25,7 @@ import { renderSplashFrame } from './renderSplashFrame.js';
 import { getStages } from './stages.js';
 import { getBackgroundColor } from './getBackgroundColor.js';
 import { interpolateObjects, rgbToHex } from './utils.js';
+import { DEBUG, drawDebugInfo, toggleDebug } from './debug.js';
 import {
     initEngineSound,
     updateEngineSound,
@@ -42,6 +43,9 @@ import {
 export const canvas = document.getElementById('c');
 export const context = canvas.getContext('2d');
 export const startTime = new Date();
+export let remainingTime = 10000; // 30 seconds in milliseconds
+export let lastStageReached = 0;
+export const BONUS_TIME = 1000; // 5 seconds bonus time per stage
 
 let entrada;
 let salida;
@@ -50,18 +54,29 @@ let printing;
 // estoy tratando de sacar la funcion que controla los printers fuera del gameinterval.
 // quiero usar un temporizador quie
 export const printa = ({ currentTime, timer }) => {
-    salida = currentTime.getTime() + timer;
-    if (!entrada && !printing) {
-        entrada = currentTime.getTime();
-    }
+    // Decrease remaining time by a fixed amount (16.67ms for 60fps)
+    remainingTime -= 16.67;
 
-    if (salida > entrada) {
-        let t = currentTime.getTime();
-        let min = Math.floor(t / 60000);
-        let sec = Math.floor((t - min * 60000) / 1000);
-        if (sec < 10) sec = '0' + sec;
+    let remainingSec = Math.ceil(remainingTime / 1000);
+    if (remainingSec < 10) remainingSec = '0' + remainingSec;
 
-        drawString({ string: 'time: ' + sec, pos: { x: 2, y: 40 } });
+    drawString({ string: 'Time: ' + remainingSec, pos: { x: 2, y: 40 } });
+
+    // Game over when time runs out
+    if (remainingTime <= 0) {
+        clearInterval(gameInterval);
+        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
+        stopEngineSound();
+        stopBackgroundMusic();
+
+        // Wait 2 seconds before restarting
+        setTimeout(() => {
+            remainingTime = 30000; // Reset timer
+            player.position = 0; // Reset player position
+            player.speed = 0; // Reset player speed
+            lastStageReached = 0; // Reset stage progress
+            splashInterval = setInterval(splashScreen, 60);
+        }, 2000);
     }
 };
 
@@ -87,6 +102,10 @@ const init = () => {
     });
     document.addEventListener('keyup', function (e) {
         keys[e.keyCode] = false;
+        if (e.keyCode === 68) {
+            // 'D' key
+            toggleDebug();
+        }
     });
 
     generateRoad();
@@ -98,6 +117,9 @@ const renderGameFrame = () => {
     // Clean screen
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
+
+    // Draw debug information
+    drawDebugInfo({ player, road, roadParam });
 
     // --------------------------
     // -- Update the NPC state --
@@ -175,6 +197,20 @@ const renderGameFrame = () => {
     // --   Render the road    --
     // --------------------------
     let absoluteIndex = Math.floor(player.position / roadSegmentSize);
+
+    const currentStagePos =
+        Math.floor(absoluteIndex / roadParam.zoneSection) + 1;
+
+    // Check if we've reached a new stage
+    if (currentStagePos > lastStageReached) {
+        lastStageReached = currentStagePos;
+        remainingTime += BONUS_TIME;
+        drawString({
+            string: 'Extended Time! +5s',
+            pos: { x: render.width / 2 - 60, y: render.height / 2 },
+            time: 240000000, // 24 frames at 24fps = 1 second
+        });
+    }
 
     const CHECKPOINT_PHASE =
         absoluteIndex > roadParam.zoneSection &&
