@@ -14,12 +14,12 @@ export const numberOfSegmentPerColor = 4;
 // TODO: hacer las zonesectino variables en un array
 
 export const roadParam = {
-    curvy: 4.0, // Increased curve frequency
-    mountainy: 3.5, // Increased elevation changes
-    maxHeight: 1500, // Higher elevation changes
-    maxCurve: 400, // Sharper turns
-    zoneSection: 600, // Shorter sections for more frequent changes
-    length: 15, // Longer track for more challenge
+    curvy: 5.0, // Significantly increased curve frequency
+    mountainy: 5.5, // Maintained elevation changes
+    maxHeight: 2500, // Maintained height changes
+    maxCurve: 600, // Increased curve intensity
+    zoneSection: 400, // Shorter sections for even more frequent changes
+    length: 15, // Maintained track length
 };
 
 // -------------------------------------

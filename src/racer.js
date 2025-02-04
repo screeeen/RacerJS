@@ -108,6 +108,43 @@ const init = () => {
         }
     });
 
+    // Add touch controls
+    let isTouching = false;
+    let touchX = 0;
+
+    canvas.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        isTouching = true;
+        touchX = e.touches[0].clientX;
+    });
+
+    canvas.addEventListener('touchmove', function (e) {
+        e.preventDefault();
+        touchX = e.touches[0].clientX;
+    });
+
+    canvas.addEventListener('touchend', function (e) {
+        e.preventDefault();
+        isTouching = false;
+    });
+
+    // Modify the game loop to handle touch controls
+    const handleTouchControls = () => {
+        if (isTouching) {
+            // Accelerate when touching
+            keys[38] = true;
+            // Turn based on touch position
+            const halfWidth = canvas.width / 2;
+            keys[37] = touchX < halfWidth; // Left
+            keys[39] = touchX >= halfWidth; // Right
+        } else {
+            // Release acceleration when not touching
+            keys[38] = false;
+            keys[37] = false;
+            keys[39] = false;
+        }
+    };
+
     generateRoad();
     // console.log('road', road);
 };
@@ -208,7 +245,7 @@ const renderGameFrame = () => {
         drawString({
             string: 'Extended Time! +5s',
             pos: { x: render.width / 2 - 60, y: render.height / 2 },
-            time: 240000000, // 24 frames at 24fps = 1 second
+            time: 240000, // 24 frames at 24fps = 1 second
         });
     }
 
@@ -439,32 +476,6 @@ const renderGameFrame = () => {
         drawNpcSprite(npcDumb);
     }
 
-    // INTENTO 2
-    // let npcSprite;
-    // const imgCarNpc = new Image();
-    // imgCarNpc.src = 'sprite_npc.png';
-    // npcSprite = {
-    //     a: npc_sprite_dumb_spriteSheet,
-    //     // coordenadas del coche en la carretera
-    //     x: 125,
-    //     y: absoluteIndex - 1,
-    // };
-
-    // console.log('npcSprite', npcSprite.s);
-
-    // drawImage(imgCarNpc, npcSprite.x, npcSprite.y, 1);
-    // context.drawImage(
-    //     imgCarNpc,
-    //     0,
-    //     0,
-    //     100,
-    //     100,
-    //     npcSprite.x,
-    //     npcSprite.y,
-    //     100,
-    //     100
-    // );
-
     // --------------------------
     // --     Draw the hud     --
     // --------------------------
@@ -485,16 +496,6 @@ const renderGameFrame = () => {
         string: '' + 'absoluteIndex ' + absoluteIndex,
         pos: { x: 2, y: 1 },
     });
-
-    // drawString(
-    // {string: "" + "height " + road[absoluteIndex].height,
-    //   pos:{ x: 2, y: 10 }}
-    // );
-
-    // drawString(
-    //   {string: "" + "curve " + road[absoluteIndex].curve,
-    //     pos:{ x: 2, y: 20 }}
-    //   );
 
     ///////// TIMER /////////
     let now = new Date();

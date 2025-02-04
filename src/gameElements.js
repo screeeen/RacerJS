@@ -7,7 +7,7 @@ export const render = {
     rightRoadBound: 0.5,
     depthOfField: 150,
     camera_distance: 20,
-    camera_height: 100,
+    camera_height: 80,
 };
 
 export const npc = {
@@ -17,7 +17,7 @@ export const npc = {
     deceleration: 0.2,
     breaking: 0.6,
     turning: 6.0,
-    posx: 0,
+    posx: 0.5,
     maxSpeed: 30,
     spriteSrc: 'sprite_npc.png',
 };
@@ -29,7 +29,7 @@ export const player = {
     deceleration: 0.2,
     breaking: 0.6,
     turning: 6.0,
-    posx: 0,
+    posx: 0.5,
     maxSpeed: 40,
 };
 

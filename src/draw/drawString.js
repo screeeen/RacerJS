@@ -1,6 +1,6 @@
 import { spritesheet, context, startTime } from '../racer.js';
 
-export const drawString = ({ string, pos, time, color = '#FFFFFF' }) => {
+export const drawString = ({ string, pos, time, color = '#FFFFFF00' }) => {
     // If time is specified, check if the message should still be displayed
     if (time !== undefined) {
         const currentFrame = window.performance.now();
