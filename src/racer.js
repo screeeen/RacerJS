@@ -116,6 +116,19 @@ const init = () => {
         e.preventDefault();
         isTouching = true;
         touchX = e.touches[0].clientX;
+        keys[38] = true; // Set acceleration key when touch starts
+
+        // Start game from splash screen
+        if (splashInterval) {
+            clearInterval(splashInterval);
+            splashInterval = null;
+            remainingTime = 30000; // Reset timer
+            player.position = 10; // Reset player position
+            player.speed = 0; // Reset player speed
+            lastStageReached = 0; // Reset stage progress
+            gameInterval = setInterval(renderGameFrame, 1000 / 60);
+            initEngineSound();
+        }
     });
 
     canvas.addEventListener('touchmove', function (e) {
@@ -126,6 +139,9 @@ const init = () => {
     canvas.addEventListener('touchend', function (e) {
         e.preventDefault();
         isTouching = false;
+        keys[38] = false; // Release acceleration key when touch ends
+        keys[37] = false; // Release left key
+        keys[39] = false; // Release right key
     });
 
     // Modify the game loop to handle touch controls
