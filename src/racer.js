@@ -209,15 +209,8 @@ const init = () => {
     // console.log('road', road);
 };
 
-let lastTime = 0;
-let gameAnimationFrame;
-
 //renders one frame
-const renderGameFrame = (timestamp) => {
-    if (!lastTime) lastTime = timestamp;
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
-
+const renderGameFrame = () => {
     // Clean screen
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
@@ -229,25 +222,25 @@ const renderGameFrame = (timestamp) => {
     // -- Update the NPC state --
     // --------------------------
     npc.speed = Math.min(npc.speed, npc.maxSpeed); //maximum speed
-    npc.position += npc.speed * (deltaTime / 16.67); // Normalize for 60fps
+    npc.position += npc.speed;
 
     // --------------------------
     // -- Update the car state --
     // --------------------------
     if (Math.abs(lastDelta) > 130) {
         if (player.speed > 3) {
-            player.speed -= 0.2 * (deltaTime / 16.67);
+            player.speed -= 0.2;
         }
     } else {
         // read acceleration controls
         if (keys[38]) {
             // 38 up
-            player.speed += player.acceleration * (deltaTime / 16.67);
+            player.speed += player.acceleration;
         } else if (keys[40]) {
             // 40 down
-            player.speed -= player.breaking * (deltaTime / 16.67);
+            player.speed -= player.breaking;
         } else {
-            player.speed -= player.deceleration * (deltaTime / 16.67);
+            player.speed -= player.deceleration;
         }
     }
     player.speed = Math.max(player.speed, 0); //cannot go in reverse
@@ -519,6 +512,7 @@ const renderGameFrame = (timestamp) => {
     // pinta los sprites del decorado
     let sprite;
     while ((sprite = spriteBuffer.pop())) {
+        // console.log(' * sprite', sprite);
         drawSprite(sprite);
     }
 
@@ -532,16 +526,15 @@ const renderGameFrame = (timestamp) => {
     // --     Draw the npc     --
     // --------------------------
 
+    // INTENTO 1
+    // pinta 1 npc - testing dumb
     let npcDumb;
+    // esta pintando el sprite dumb del npcDumb coche ahí delante
     while ((npcDumb = npcSpriteBuffer.pop())) {
+        // console.log(' * npcDumb', npcDumb);
+        // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
         drawNpcSprite(npcDumb);
     }
-
-    // Flush all sprites at once for better performance
-    flushSpriteQueue();
-
-    // Update timer
-    printa({ currentTime: performance.now() });
 
     // --------------------------
     // --     Draw the hud     --
@@ -582,37 +575,16 @@ const renderGameFrame = (timestamp) => {
 ////////////////// SPLASH //////////////////
 
 // splash
-const splashScreen = (timestamp) => {
+const splashScreen = () => {
     renderSplashFrame();
     if (keys[32]) {
         initEngineSound();
         // initBackgroundMusic();
         updateBackgroundMusic('racing');
-        cancelAnimationFrame(splashInterval);
-        lastTime = 0;
-        gameAnimationFrame = requestAnimationFrame(renderGameFrame);
-    } else {
-        splashInterval = requestAnimationFrame(splashScreen);
+        clearInterval(splashInterval);
+        gameInterval = setInterval(renderGameFrame, 24);
     }
 };
-
-// Update game over handling
-if (remainingTime <= 0) {
-    cancelAnimationFrame(gameAnimationFrame);
-    drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
-    stopEngineSound();
-    stopBackgroundMusic();
-
-    // Wait 2 seconds before restarting
-    setTimeout(() => {
-        remainingTime = 30000; // Reset timer
-        player.position = 0; // Reset player position
-        player.speed = 0; // Reset player speed
-        lastStageReached = 0; // Reset stage progress
-        lastTime = 0;
-        splashInterval = requestAnimationFrame(splashScreen);
-    }, 2000);
-}
 
 // main
 const start = () => {
