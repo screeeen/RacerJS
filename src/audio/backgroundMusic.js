@@ -98,7 +98,10 @@ export const stopBackgroundMusic = () => {
 
     gainNodes.forEach((gain) => {
         gain.gain.setTargetAtTime(0, audioContext.currentTime, 0.1);
-    });
-
+            0.001,
+            audioContext.currentTime + 0.1
     isPlaying = false;
+        gainNodes = [];
+        isPlaying = false;
+    }, 100);
 };

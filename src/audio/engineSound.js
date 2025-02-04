@@ -17,6 +17,9 @@ const gearConfig = {
 
 // Initialize audio context and nodes
 export const initEngineSound = () => {
+    if (audioContext) {
+        stopEngineSound(); // Clean up existing audio context
+    }
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
     // Create oscillator for base engine sound
@@ -98,6 +101,21 @@ export const updateEngineSound = ({ speed, maxSpeed, acceleration }) => {
 // Stop engine sound
 export const stopEngineSound = () => {
     if (!audioContext) return;
-    oscillator.stop();
-    audioContext.close();
+
+    // Gracefully ramp down the volume
+    gainNode.gain.setValueAtTime(gainNode.gain.value, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.1
+    );
+
+    // Schedule the stop
+    setTimeout(() => {
+        oscillator.stop();
+        audioContext.close();
+        audioContext = null;
+        oscillator = null;
+        gainNode = null;
+        filterNode = null;
+    }, 100);
 };
