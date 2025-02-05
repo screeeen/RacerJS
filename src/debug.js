@@ -2,11 +2,11 @@ import { drawString } from './draw/drawString.js';
 import { render } from './gameElements.js';
 
 export const DEBUG = {
-    enabled: true,
-    showFPS: true,
-    showPlayerInfo: true,
-    showStageInfo: true,
-    showRoadInfo: true,
+    enabled: false,
+    showFPS: false,
+    showPlayerInfo: false,
+    showStageInfo: false,
+    showRoadInfo: false,
 };
 
 let lastFrameTime = performance.now();
