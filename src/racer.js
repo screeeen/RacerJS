@@ -108,6 +108,50 @@ const init = () => {
         }
     });
 
+    // Add button controls
+    const leftButton = document.getElementById('left');
+    const rightButton = document.getElementById('right');
+    const accelerateButton = document.getElementById('accelerate');
+
+    leftButton.addEventListener('mousedown', () => {
+        keys[37] = true;
+        keys[38] = true; // Add acceleration when left button is pressed
+    });
+    leftButton.addEventListener('mouseup', () => {
+        keys[37] = false;
+        keys[38] = false; // Release acceleration when left button is released
+    });
+    leftButton.addEventListener('touchstart', () => {
+        keys[37] = true;
+        keys[38] = true; // Add acceleration when left button is touched
+    });
+    leftButton.addEventListener('touchend', () => {
+        keys[37] = false;
+        keys[38] = false; // Release acceleration when left touch ends
+    });
+
+    rightButton.addEventListener('mousedown', () => {
+        keys[39] = true;
+        keys[38] = true; // Add acceleration when right button is pressed
+    });
+    rightButton.addEventListener('mouseup', () => {
+        keys[39] = false;
+        keys[38] = false; // Release acceleration when right button is released
+    });
+    rightButton.addEventListener('touchstart', () => {
+        keys[39] = true;
+        keys[38] = true; // Add acceleration when right button is touched
+    });
+    rightButton.addEventListener('touchend', () => {
+        keys[39] = false;
+        keys[38] = false; // Release acceleration when right touch ends
+    });
+
+    accelerateButton.addEventListener('mousedown', () => (keys[38] = true));
+    accelerateButton.addEventListener('mouseup', () => (keys[38] = false));
+    accelerateButton.addEventListener('touchstart', () => (keys[38] = true));
+    accelerateButton.addEventListener('touchend', () => (keys[38] = false));
+
     // Add touch controls
     let isTouching = false;
     let touchX = 0;
