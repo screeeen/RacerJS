@@ -81,6 +81,7 @@ export const printa = ({ currentTime, timer }) => {
 };
 
 export const spritesheet = new Image();
+spritesheet.src = 'spritesheet.high.bw.png';
 export const keys = []; // teclas
 
 let lastDelta = 0;
@@ -546,7 +547,13 @@ const renderGameFrame = () => {
     // --     Draw the car     --
     // --------------------------
 
-    drawImage(carSprite.a, carSprite.x, carSprite.y, 1);
+    drawSprite({
+        i: carSprite.a,
+        x: carSprite.x,
+        y: carSprite.y,
+        s: 1,
+        ymax: render.height,
+    });
 
     // --------------------------
     // --     Draw the npc     --
@@ -561,6 +568,9 @@ const renderGameFrame = () => {
         // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
         drawNpcSprite(npcDumb);
     }
+
+    // Flush all queued sprites to the screen
+    flushSpriteQueue();
 
     // --------------------------
     // --     Draw the hud     --
