@@ -1,40 +1,100 @@
-import { context } from '../racer.js';
-import { drawImage } from './drawImage.js';
-
-// Batch sprites for more efficient rendering
-let spriteRenderQueue = [];
+import { spritesheet, context } from '../racer.js';
 
 export const drawSprite = (sprite) => {
-    spriteRenderQueue.push(sprite);
+    const destY = sprite.y - sprite.i.h * sprite.s;
+    let h;
+    if (sprite.ymax < sprite.y) {
+        h = Math.min(
+            (sprite.i.h * (sprite.ymax - destY)) / (sprite.i.h * sprite.s),
+            sprite.i.h
+        );
+    } else {
+        h = sprite.i.h;
+    }
+
+    if (h > 0)
+        context.drawImage(
+            spritesheet,
+            sprite.i.x,
+            sprite.i.y,
+            sprite.i.w,
+            h,
+            sprite.x,
+            destY,
+            sprite.s * sprite.i.w,
+            sprite.s * h
+        );
+    //}
 };
 
 export const drawNpcSprite = (sprite) => {
-    spriteRenderQueue.push({
-        ...sprite,
-        isNpc: true,
-    });
-};
+    // sprite
+    // - sprite props -
+    // sprite i {x,y,w,h} dimensiones de pintado h,w,x,y
+    // sprite s escala
+    // sprite x
+    // sprite y
+    // sprite ymax altura en el horizonte + el ultimo valor de altura de horizonte registrado...
 
-// Render all queued sprites at once
-export const flushSpriteQueue = () => {
-    // Sort sprites by y-position for correct depth ordering
-    spriteRenderQueue.sort((a, b) => b.y - a.y);
+    const escalaCoche = 0.25;
+    // distancia z al player?
+    let destY = sprite.y - sprite.i.h * sprite.s * escalaCoche;
+    // console.log('y', sprite.y);
+    // console.log('.s', sprite.s);
+    // console.log('sprite.y', sprite.y);
+    // console.log('factor', sprite.i.h * sprite.s * escalaCoche);
+    console.log('desty', destY);
 
-    // Set canvas state once for all sprites
-    context.save();
-    context.imageSmoothingEnabled = false;
+    // window.showit = () => console.log(destY);
+    // window.changeit = (val) => (destY = val);
 
-    // Render all sprites in batch
-    for (const sprite of spriteRenderQueue) {
-        if (sprite.y < sprite.ymax) {
-            const scale = sprite.s || 1;
-            drawImage(sprite.i, sprite.x, sprite.y, scale);
-        }
+    // console.log('i.h', sprite.i.h);
+    // console.log('carSprite', carSprite);
+
+    let h;
+    if (sprite.ymax < sprite.y) {
+        h = Math.min(
+            (sprite.i.h * (sprite.ymax - destY)) / (sprite.i.h * sprite.s),
+            sprite.i.h
+        );
+    } else {
+        h = sprite.i.h;
     }
 
-    // Restore canvas state
-    context.restore();
+    const img = new Image();
+    img.src = 'sprite_npc.png';
 
-    // Clear the queue
-    spriteRenderQueue = [];
+    context.drawImage(
+        img,
+        sprite.i.x,
+        sprite.i.y,
+        sprite.i.w,
+        h,
+        sprite.x,
+        destY,
+        sprite.s * sprite.i.w,
+        sprite.s * h
+    );
+
+    // let npcSprite;
+    // const imgCarNpc = new Image();
+    // imgCarNpc.src = 'sprite_npc.png';
+    // npcSprite = {
+    //     a: imgCarNpc,
+    //     x: 225,
+    //     y: 190,
+    // };
+
+    // console.log('npcSprite', npcSprite);
+    // context.drawImage(
+    //     imgCarNpc,
+    //     npcSprite.x,
+    //     npcSprite.y,
+    //     1,
+    //     1,
+    //     sprite.x,
+    //     destY,
+    //     sprite.s * sprite.i.w,
+    //     sprite.s * h
+    // );
 };

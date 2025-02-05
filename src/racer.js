@@ -509,22 +509,22 @@ const renderGameFrame = () => {
         // --     Draw the npc     --
         // --------------------------
 
-        if (currentSegment.npcSpriteDumb) {
-            npcSpriteBuffer.push({
-                y: render.height / 2 + startProjectedHeight,
-                x:
-                    render.width / 2 -
-                    currentSegment.npcSpriteDumb.pos *
-                        render.width *
-                        currentScaling +
-                    currentSegment.curve -
-                    baseOffset -
-                    (player.posx - baseOffset * 2) * currentScaling,
-                ymax: render.height / 2 + lastProjectedHeight,
-                s: currentScaling,
-                i: currentSegment.npcSpriteDumb.type,
-            });
-        }
+        // if (currentSegment.npcSpriteDumb) {
+        //     npcSpriteBuffer.push({
+        //         y: render.height / 2 + startProjectedHeight,
+        //         x:
+        //             render.width / 2 -
+        //             currentSegment.npcSpriteDumb.pos *
+        //                 render.width *
+        //                 currentScaling +
+        //             currentSegment.curve -
+        //             baseOffset -
+        //             (player.posx - baseOffset * 2) * currentScaling,
+        //         ymax: render.height / 2 + lastProjectedHeight,
+        //         s: currentScaling,
+        //         i: currentSegment.npcSpriteDumb.type,
+        //     });
+        // }
 
         // LOOP
 
@@ -547,13 +547,13 @@ const renderGameFrame = () => {
     // --     Draw the car     --
     // --------------------------
 
-    drawSprite({
-        i: carSprite.a,
-        x: carSprite.x,
-        y: carSprite.y,
-        s: 1,
-        ymax: render.height,
-    });
+    // drawSprite({
+    //     i: carSprite.a,
+    //     x: carSprite.x,
+    //     y: carSprite.y,
+    //     s: 1,
+    //     ymax: render.height,
+    // });
 
     // --------------------------
     // --     Draw the npc     --
