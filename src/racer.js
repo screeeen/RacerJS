@@ -147,9 +147,35 @@ const init = () => {
         keys[38] = false; // Release acceleration when right touch ends
     });
 
-    accelerateButton.addEventListener('mousedown', () => (keys[38] = true));
+    accelerateButton.addEventListener('mousedown', () => {
+        keys[38] = true;
+        // Start game from splash screen when center button is pressed
+        if (splashInterval) {
+            clearInterval(splashInterval);
+            splashInterval = null;
+            remainingTime = 30000; // Reset timer
+            player.position = 10; // Reset player position
+            player.speed = 0; // Reset player speed
+            lastStageReached = 0; // Reset stage progress
+            gameInterval = setInterval(renderGameFrame, 1000 / 60);
+            initEngineSound();
+        }
+    });
     accelerateButton.addEventListener('mouseup', () => (keys[38] = false));
-    accelerateButton.addEventListener('touchstart', () => (keys[38] = true));
+    accelerateButton.addEventListener('touchstart', () => {
+        keys[38] = true;
+        // Start game from splash screen when center button is touched
+        if (splashInterval) {
+            clearInterval(splashInterval);
+            splashInterval = null;
+            remainingTime = 30000; // Reset timer
+            player.position = 10; // Reset player position
+            player.speed = 0; // Reset player speed
+            lastStageReached = 0; // Reset stage progress
+            gameInterval = setInterval(renderGameFrame, 1000 / 60);
+            initEngineSound();
+        }
+    });
     accelerateButton.addEventListener('touchend', () => (keys[38] = false));
 
     // Add touch controls
