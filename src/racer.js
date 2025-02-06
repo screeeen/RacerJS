@@ -366,6 +366,9 @@ const renderGameFrame = () => {
     let currentSegment = road[currentSegmentIndex];
 
     // Drawing the background
+    if (currentSegment.curve === undefined) {
+        debugger;
+    }
     drawBackground(currentSegment.curve);
 
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
@@ -568,9 +571,6 @@ const renderGameFrame = () => {
         // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
         drawNpcSprite(npcDumb);
     }
-
-    // Flush all queued sprites to the screen
-    flushSpriteQueue();
 
     // --------------------------
     // --     Draw the hud     --
