@@ -1,7 +1,4 @@
 #c {
-    /* border: 3px solid yellow; */
-    /* transform: scale(2, 2) translate(10px, 10px); */
-    /* height: 100%; */
     width: 100%;
     resize: both;
     position: absolute;
@@ -23,7 +20,21 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    border: 8px solid yellow;
+    visibility: visible;
+}
+
+@media (min-width: 768px) {
+    .game-controls {
+        visibility: hidden;
+    }
+    #c {
+        width: 100%;
+        height: 100vh;
+        resize: both;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 }
 
 #left,
