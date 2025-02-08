@@ -4,6 +4,12 @@
         <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script> -->
         <!--<script src="jquery.js"></script>-->
         <link rel="stylesheet" href="style.css" />
+        <link
+            rel="preload"
+            href="spritesheet.high.bw.png"
+            as="image"
+            fetchpriority="high"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         <style>
@@ -18,10 +24,12 @@
         </style>
     </head>
     <body>
-        <canvas id="c"></canvas>
-        <p>wipe your finger up left right down</p>
-        <div class="game-controls">
-            <div id="touch-pad"></div>
+        <div class="content">
+            <canvas id="c"></canvas>
+            <p>wipe your finger up left right down</p>
+            <div class="game-controls">
+                <div id="touch-pad"></div>
+            </div>
         </div>
         <!-- <script type="module" src="./src/generateBumpyRoad.js"></script> -->
         <script type="module" src="./src/racer.js"></script>
