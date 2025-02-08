@@ -182,11 +182,38 @@ const init = () => {
     // Add touch controls
     let isTouching = false;
     let touchX = 0;
+    let touchY = 0;
+    const touchPad = document.getElementById('touch-pad');
+    const touchCoordDisplay = document.createElement('div');
+    touchCoordDisplay.style.position = 'absolute';
+    touchCoordDisplay.style.color = 'white';
+    touchCoordDisplay.style.padding = '5px';
+    touchCoordDisplay.style.fontSize = '12px';
+    touchPad.appendChild(touchCoordDisplay);
 
-    canvas.addEventListener('touchstart', function (e) {
+    const updateTouchCoordinates = (e, element) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+
+        const rect = element.getBoundingClientRect();
+        // const x = e.touches[0].clientX - rect.left;
+        // const y = e.touches[0].clientY - rect.top;
+
+        const x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+        const y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
+
+        // Set directional controls based on x threshold values
+        keys[37] = x < -0.3; // Left key when x < -0.3
+        keys[39] = x > 0.3; // Right key when x > 0.3
+        keys[38] = true; // Keep acceleration on while touching
+
+        touchCoordDisplay.textContent = `X: ${x.toFixed(2)} Y: ${y.toFixed(2)}`;
+    };
+
+    touchPad.addEventListener('touchstart', function (e) {
         e.preventDefault();
         isTouching = true;
-        touchX = e.touches[0].clientX;
+        updateTouchCoordinates(e, this);
         keys[38] = true; // Set acceleration key when touch starts
 
         // Start game from splash screen
@@ -202,12 +229,12 @@ const init = () => {
         }
     });
 
-    canvas.addEventListener('touchmove', function (e) {
+    touchPad.addEventListener('touchmove', function (e) {
         e.preventDefault();
-        touchX = e.touches[0].clientX;
+        updateTouchCoordinates(e, this);
     });
 
-    canvas.addEventListener('touchend', function (e) {
+    touchPad.addEventListener('touchend', function (e) {
         e.preventDefault();
         isTouching = false;
         keys[38] = false; // Release acceleration key when touch ends
