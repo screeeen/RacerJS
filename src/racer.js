@@ -196,8 +196,6 @@ const init = () => {
         const touch = e.touches[0];
 
         const rect = element.getBoundingClientRect();
-        // const x = e.touches[0].clientX - rect.left;
-        // const y = e.touches[0].clientY - rect.top;
 
         const x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
         const y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
@@ -205,7 +203,18 @@ const init = () => {
         // Set directional controls based on x threshold values
         keys[37] = x < -0.3; // Left key when x < -0.3
         keys[39] = x > 0.3; // Right key when x > 0.3
-        keys[38] = true; // Keep acceleration on while touching
+
+        // Set acceleration based on y threshold values
+        if (y < -0.3) {
+            keys[38] = false; // Release acceleration
+            keys[40] = true; // Apply brake
+        } else if (y > 0.1) {
+            keys[38] = true; // Apply acceleration
+            keys[40] = false; // Release brake
+        } else {
+            keys[38] = false; // No acceleration in neutral zone
+            keys[40] = false; // No brake in neutral zone
+        }
 
         touchCoordDisplay.textContent = `X: ${x.toFixed(2)} Y: ${y.toFixed(2)}`;
     };
