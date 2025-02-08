@@ -76,8 +76,31 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    /* transform-origin: center; */
-    /* Add transform origin for consistent centering */
+}
+
+#touch-pad::before,
+#touch-pad::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#touch-pad::before {
+    /* Vertical line */
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    transform: translateX(-50%);
+}
+
+#touch-pad::after {
+    /* Horizontal line */
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: translateY(-50%);
 }
 
 #touch-pad:active {
