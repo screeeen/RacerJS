@@ -1,12 +1,13 @@
 import { drawString } from './draw/drawString.js';
 import { render } from './gameElements.js';
+import { roadSegmentSize } from './generateRoad.js';
 
 export const DEBUG = {
-    enabled: false,
-    showFPS: false,
-    showPlayerInfo: false,
-    showStageInfo: false,
-    showRoadInfo: false,
+    enabled: true,
+    showFPS: true,
+    showPlayerInfo: true,
+    showStageInfo: true,
+    showRoadInfo: true,
 };
 
 let lastFrameTime = performance.now();
@@ -23,11 +24,11 @@ export const toggleDebug = () => {
 };
 
 // Debug information display
-export const drawDebugInfo = ({ player, road, roadParam }) => {
+export const drawDebugInfo = ({ player, road, roadParam, absoluteIndex }) => {
     if (!DEBUG.enabled) return;
 
-    let y = 20;
-    const lineHeight = 15;
+    let y = 30;
+    const lineHeight = 10;
     const rightMargin = 10;
     const rightSide = render.width - rightMargin;
 
@@ -52,24 +53,26 @@ export const drawDebugInfo = ({ player, road, roadParam }) => {
                 () => `Pos Z: ${player.position.toFixed(2)}`,
             ],
         },
-        {
-            condition: DEBUG.showStageInfo,
-            items: [
-                () => {
-                    const currentStage = Math.floor(
-                        player.position / roadParam.zoneSection
-                    );
-                    return `Stage: ${currentStage}`;
-                },
-            ],
-        },
+        // {
+        //     condition: DEBUG.showStageInfo,
+        //     items: [
+        //         () => {
+        //             const currentStage = Math.floor(
+        //                 player.position / roadParam.zoneSection
+        //             );
+        //             return `Stage: ${currentStage}`;
+        //         },
+        //     ],
+        // },
         {
             condition: DEBUG.showRoadInfo,
             items: [
                 () => {
                     const segment = road[Math.floor(player.position)];
                     if (!segment) return null;
+                    player.position / roadSegmentSize;
                     return [
+                        `AbsoluteIndex: ${absoluteIndex}`,
                         `Curve: ${Math.round(segment.curve)}`,
                         `Height: ${Math.round(segment.height)}`,
                     ];

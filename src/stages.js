@@ -5,8 +5,8 @@ export const getStages = (alternate) => [
     {
         position: 0,
         name: 'normal',
-        startIndex: 0, // comienzo de la transi
-        endIndex: 100, // final de la transi
+        startIndex: 1000, // comienzo de la transi
+        endIndex: 2000, // final de la transi
         colors: {
             background: [136, 136, 136],
             grass: alternate ? [136, 136, 136] : [102, 102, 102],
@@ -18,8 +18,8 @@ export const getStages = (alternate) => [
     {
         position: 1,
         name: 'sandy',
-        startIndex: 100,
-        endIndex: 1000,
+        startIndex: 1000,
+        endIndex: 2000,
         colors: {
             background: [231, 224, 230],
             grass: [231, 224, 204],
@@ -31,8 +31,8 @@ export const getStages = (alternate) => [
     {
         position: 2,
         name: 'water',
-        startIndex: 1100,
-        endIndex: 2000,
+        startIndex: 3000,
+        endIndex: 4000,
         colors: {
             background: [194, 178, 128],
             grass: [194, 178, 128],
@@ -44,8 +44,8 @@ export const getStages = (alternate) => [
     {
         position: 3,
         name: 'rocky',
-        startIndex: 2100,
-        endIndex: 3000,
+        startIndex: 5000,
+        endIndex: 6000,
         colors: {
             background: [90, 90, 100],
             grass: alternate ? [10, 10, 10] : [0, 10, 12],

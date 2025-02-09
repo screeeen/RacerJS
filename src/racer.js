@@ -18,7 +18,6 @@ import { roadParam } from './generateRoad.js';
 import { resize } from './resize.js';
 import { drawString } from './draw/drawString.js';
 import { drawSegment } from './draw/drawSegment.js';
-import { drawImage } from './draw/drawImage.js';
 import { drawSprite } from './draw/drawSprite.js';
 import { drawBackground } from './draw/drawBackground.js';
 import { renderSplashFrame } from './renderSplashFrame.js';
@@ -46,36 +45,6 @@ export let remainingTime = 10000; // 30 seconds in milliseconds
 export let isGameStarted = false;
 export let lastStageReached = 0;
 export const BONUS_TIME = 1000; // 5 seconds bonus time per stage
-
-// estoy tratando de sacar la funcion que controla los printers fuera del gameinterval.
-// quiero usar un temporizador quie
-export const printa = () => {
-    // Decrease remaining time by a fixed amount (16.67ms for 60fps)
-    remainingTime -= 16.67;
-
-    let remainingSec = Math.ceil(remainingTime / 1000);
-    if (remainingSec < 10) remainingSec = '0' + remainingSec;
-
-    drawString({ string: 'Time: ' + remainingSec, pos: { x: 2, y: 40 } });
-
-    // Game over when time runs out
-    if (remainingTime <= 0) {
-        clearInterval(gameInterval);
-        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
-        stopEngineSound();
-        isGameStarted = false;
-        // stopBackgroundMusic();
-
-        // Wait 2 seconds before restarting
-        setTimeout(() => {
-            remainingTime = 30000; // Reset timer
-            player.position = 0; // Reset player position
-            player.speed = 0; // Reset player speed
-            lastStageReached = 0; // Reset stage progress
-            splashInterval = setInterval(splashScreen, 60);
-        }, 2000);
-    }
-};
 
 export const spritesheet = new Image();
 spritesheet.src = 'spritesheet.high.bw.png';
@@ -178,9 +147,6 @@ const renderGameFrame = () => {
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
 
-    // Draw debug information
-    drawDebugInfo({ player, road, roadParam });
-
     // --------------------------
     // -- Update the car state --
     // --------------------------
@@ -260,22 +226,26 @@ const renderGameFrame = () => {
         lastStageReached = currentStagePos;
         remainingTime += BONUS_TIME;
         drawString({
+            string: 'Checkpoint!',
+            pos: { x: 100, y: 40 },
+            time: 100,
+        });
+        drawString({
             string: 'Extended Time! +5s',
             pos: { x: render.width / 2 - 60, y: render.height / 2 },
-            time: 240000, // 24 frames at 24fps = 1 second
+            time: 100, // 24 frames at 24fps = 1 second
         });
     }
 
-    const CHECKPOINT_PHASE =
-        absoluteIndex > roadParam.zoneSection &&
-        absoluteIndex < roadParam.zoneSection + 100;
+    // const CHECKPOINT_PHASE =
+    //     absoluteIndex > roadParam.zoneSection &&
+    //     absoluteIndex < roadParam.zoneSection + 100;
 
-    // --------------------------
-    // --   Checkpoint!   --
-    // --------------------------
-    if (CHECKPOINT_PHASE) {
-        drawString({ string: 'Checkpoint ', pos: { x: 100, y: 20 }, time: 10 });
-    }
+    // // --------------------------
+    // // --   Checkpoint!   --
+    // // --------------------------
+    // if (CHECKPOINT_PHASE) {
+    // }
 
     // --------------------------
     // --   Finish!   --
@@ -284,9 +254,10 @@ const renderGameFrame = () => {
         drawString({
             string: 'Lap completed!',
             pos: { x: 100, y: 20 },
+            time: 960000,
         });
         // Reset player position to start a new lap
-        player.position = 0;
+        // player.position = 0;
         // Keep the game running - removed clearInterval and sound stops
     }
 
@@ -297,10 +268,13 @@ const renderGameFrame = () => {
 
     // Drawing the background
     if (currentSegment.curve === undefined) {
-        debugger;
-        //TODO: check this
+        console.warn('Undefined curve detected in segment');
+        currentSegment.curve = 0; // Provide a default value to prevent rendering issues
     }
     drawBackground(currentSegment.curve);
+
+    // Draw debug information
+    drawDebugInfo({ player, road, roadParam, absoluteIndex });
 
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
@@ -376,6 +350,10 @@ const renderGameFrame = () => {
 
         let t = 0;
         if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
+            // console.log('startIndex', startIndex);
+            // console.log('endIndex', endIndex);
+            // console.log('t', t);
+
             t = (absoluteIndex - startIndex) / (endIndex - startIndex);
         }
 
@@ -439,27 +417,6 @@ const renderGameFrame = () => {
             });
         }
 
-        // --------------------------
-        // --     Draw the npc     --
-        // --------------------------
-
-        // if (currentSegment.npcSpriteDumb) {
-        //     npcSpriteBuffer.push({
-        //         y: render.height / 2 + startProjectedHeight,
-        //         x:
-        //             render.width / 2 -
-        //             currentSegment.npcSpriteDumb.pos *
-        //                 render.width *
-        //                 currentScaling +
-        //             currentSegment.curve -
-        //             baseOffset -
-        //             (player.posx - baseOffset * 2) * currentScaling,
-        //         ymax: render.height / 2 + lastProjectedHeight,
-        //         s: currentScaling,
-        //         i: currentSegment.npcSpriteDumb.type,
-        //     });
-        // }
-
         // LOOP
 
         lastProjectedHeight = currentHeight;
@@ -498,18 +455,15 @@ const renderGameFrame = () => {
                 (absoluteIndex / (roadParam.length - render.depthOfField)) * 100
             ) +
             '%',
-        pos: { x: 287, y: 1 },
+        pos: { x: 280, y: 1 },
     });
 
     let speed = Math.round((player.speed / player.maxSpeed) * 200);
-    drawString({ string: '' + speed + 'mph', pos: { x: 280, y: 20 } });
+    drawString({ string: '' + speed + 'mph', pos: { x: 270, y: 220 } });
 
-    drawString({
-        string: '' + 'absoluteIndex ' + absoluteIndex,
-        pos: { x: 2, y: 1 },
-    });
-
-    ///////// TIMER /////////
+    // --------------------------
+    // --     Timer logid     --
+    // --------------------------
     let now = new Date();
     let diff = now.getTime() - startTime.getTime();
     let min = Math.floor(diff / 60000);
@@ -519,14 +473,30 @@ const renderGameFrame = () => {
     if (mili < 100) mili = '0' + mili;
     if (mili < 10) mili = '0' + mili;
 
-    // const currentTimeString = "" + min + ":" + sec;
+    // Decrease remaining time by a fixed amount (16.67ms for 60fps)
+    remainingTime -= 16.67;
 
-    printa();
+    let remainingSec = Math.ceil(remainingTime / 1000);
+    if (remainingSec < 10) remainingSec = '0' + remainingSec;
+
+    drawString({ string: 'Time: ' + remainingSec, pos: { x: 120, y: 10 } });
+
+    // Game over when time runs out
+    if (remainingTime <= 0) {
+        clearInterval(gameInterval);
+        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
+        stopEngineSound();
+        isGameStarted = false;
+        // stopBackgroundMusic();
+
+        // Wait 2 seconds before restarting
+        setTimeout(() => {
+            splashInterval = setInterval(splashScreen, 60);
+        }, 2000);
+    }
 };
 
 ////////////////// SPLASH //////////////////
-
-// splash
 const splashScreen = () => {
     renderSplashFrame();
 
@@ -543,6 +513,7 @@ const startGame = () => {
         remainingTime = 30000; // Reset timer
         player.position = 10; // Reset player position
         player.speed = 0; // Reset player speed
+        console.log(player);
         lastStageReached = 0; // Reset stage progress
         gameInterval = setInterval(renderGameFrame, 1000 / 60);
         initEngineSound();

@@ -18,7 +18,8 @@ export const roadParam = {
     mountainy: 6.5, // Maintained elevation changes
     maxHeight: 3000, // Maintained height changes
     maxCurve: 300, // Increased curve intensity
-    zoneSection: 400, // Shorter sections for even more frequent changes
+    // los intervalos de transicion se determinan: ejemplo:  startIndex: 5000,endIndex: 6000,
+    zoneSection: 2000, // Shorter sections for even more frequent changes
     length: 15, // Maintained track length
 };
 

@@ -4,6 +4,7 @@ export const drawString = ({ string, pos, time, color = '#FFFFFF00' }) => {
     // If time is specified, check if the message should still be displayed
     if (time !== undefined) {
         const currentFrame = window.performance.now();
+
         if (!window.messageTimers) window.messageTimers = new Map();
 
         const messageKey = `${string}-${pos.x}-${pos.y}`;
@@ -17,6 +18,7 @@ export const drawString = ({ string, pos, time, color = '#FFFFFF00' }) => {
         if (elapsed >= time * (1000 / 24)) {
             // Convert frames to milliseconds (24fps)
             window.messageTimers.delete(messageKey);
+            string = undefined;
             return;
         }
     }
