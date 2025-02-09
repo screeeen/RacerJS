@@ -4,7 +4,7 @@ import {
     palm,
     bridge,
     tree,
-    npc_sprite_dumb_spriteSheet,
+    // npc_sprite_dumb_spriteSheet,
 } from './gameElements.js';
 import { r } from './utils.js';
 export const road = [];
@@ -14,10 +14,10 @@ export const numberOfSegmentPerColor = 4;
 // TODO: hacer las zonesectino variables en un array
 
 export const roadParam = {
-    curvy: 5.0, // Significantly increased curve frequency
-    mountainy: 5.5, // Maintained elevation changes
-    maxHeight: 2500, // Maintained height changes
-    maxCurve: 600, // Increased curve intensity
+    curvy: 1.0, // Significantly increased curve frequency
+    mountainy: 6.5, // Maintained elevation changes
+    maxHeight: 3000, // Maintained height changes
+    maxCurve: 300, // Increased curve intensity
     zoneSection: 400, // Shorter sections for even more frequent changes
     length: 15, // Maintained track length
 };
@@ -118,7 +118,7 @@ export const generateRoad = () => {
             const freqPuentes = 10;
             const freqPalmeras = 6;
             const freqCactus = r() < 0.09;
-            const freqTunel = 4; // Frequent tunnel walls for continuous effect
+            const freqTunel = 0.5; // Frequent tunnel walls for continuous effect
 
             if (CASAS && i % freqCasas === 0) {
                 const chosenValue = r() < 0.5 ? -0.55 : 1.1;
@@ -140,8 +140,8 @@ export const generateRoad = () => {
             } else if (TUNEL && i % freqTunel === 0) {
                 // Add tunnel walls on both sides
                 sprite = {
-                    type: house, // Using house sprite for tunnel walls
-                    pos: i % (freqTunel * 2) < freqTunel ? -0.55 : 1.1,
+                    type: bridge,
+                    pos: 0.8,
                     isTunnel: true, // Mark as tunnel for special rendering
                 };
             } else {
@@ -152,14 +152,14 @@ export const generateRoad = () => {
             // -- NPCS!   --
             // --------------------------
 
-            let npcSpriteDumb = false;
-            if (CASAS && i === 30) {
-                npcSpriteDumb = {
-                    src: 'sprite_npc.png',
-                    type: npc_sprite_dumb_spriteSheet,
-                    pos: 0,
-                };
-            }
+            // let npcSpriteDumb = false;
+            // if (CASAS && i === 30) {
+            //     npcSpriteDumb = {
+            //         src: 'sprite_npc.png',
+            //         type: npc_sprite_dumb_spriteSheet,
+            //         pos: 0,
+            //     };
+            // }
 
             road.push({
                 height:
@@ -179,7 +179,7 @@ export const generateRoad = () => {
                                     Math.PI / 2
                             )),
                 sprite,
-                npcSpriteDumb,
+                // npcSpriteDumb,
                 stage: currentStage, // solo para debug
             });
         }

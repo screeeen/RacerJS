@@ -5,13 +5,13 @@ import {
     numberOfSegmentPerColor,
 } from './generateRoad.js';
 import {
-    car,
-    car_4,
-    car_8,
+    // car,
+    // car_4,
+    // car_8,
     render,
     player,
-    npc,
-    npc_sprite_dumb_spriteSheet,
+    // npc,
+    // npc_sprite_dumb_spriteSheet,
 } from './gameElements.js';
 import { roadParam } from './generateRoad.js';
 // import { generateBumpyRoad } from './src/generateBumpyRoad.js';
@@ -19,23 +19,22 @@ import { resize } from './resize.js';
 import { drawString } from './draw/drawString.js';
 import { drawSegment } from './draw/drawSegment.js';
 import { drawImage } from './draw/drawImage.js';
-import { drawSprite, drawNpcSprite } from './draw/drawSprite.js';
+import { drawSprite } from './draw/drawSprite.js';
 import { drawBackground } from './draw/drawBackground.js';
 import { renderSplashFrame } from './renderSplashFrame.js';
 import { getStages } from './stages.js';
 import { getBackgroundColor } from './getBackgroundColor.js';
-import { interpolateObjects, rgbToHex } from './utils.js';
-import { DEBUG, drawDebugInfo, toggleDebug } from './debug.js';
+import { interpolateObjects } from './utils.js';
+import { drawDebugInfo, toggleDebug } from './debug.js';
 import {
     initEngineSound,
     updateEngineSound,
     stopEngineSound,
 } from './audio/engineSound.js';
-import {
-    // initBackgroundMusic,
-    updateBackgroundMusic,
-    stopBackgroundMusic,
-} from './audio/backgroundMusic.js';
+import // initBackgroundMusic,
+// updateBackgroundMusic,
+// stopBackgroundMusic,
+'./audio/backgroundMusic.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -44,16 +43,13 @@ export const canvas = document.getElementById('c');
 export const context = canvas.getContext('2d');
 export const startTime = new Date();
 export let remainingTime = 10000; // 30 seconds in milliseconds
+export let isGameStarted = false;
 export let lastStageReached = 0;
 export const BONUS_TIME = 1000; // 5 seconds bonus time per stage
 
-let entrada;
-let salida;
-let printing;
-
 // estoy tratando de sacar la funcion que controla los printers fuera del gameinterval.
 // quiero usar un temporizador quie
-export const printa = ({ currentTime, timer }) => {
+export const printa = () => {
     // Decrease remaining time by a fixed amount (16.67ms for 60fps)
     remainingTime -= 16.67;
 
@@ -67,7 +63,8 @@ export const printa = ({ currentTime, timer }) => {
         clearInterval(gameInterval);
         drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
         stopEngineSound();
-        stopBackgroundMusic();
+        isGameStarted = false;
+        // stopBackgroundMusic();
 
         // Wait 2 seconds before restarting
         setTimeout(() => {
@@ -109,81 +106,12 @@ const init = () => {
         }
     });
 
-    // Add button controls
-    // const leftButton = document.getElementById('left');
-    // const rightButton = document.getElementById('right');
-    // const accelerateButton = document.getElementById('accelerate');
-
-    // leftButton.addEventListener('mousedown', () => {
-    //     keys[37] = true;
-    //     keys[38] = true; // Add acceleration when left button is pressed
-    // });
-    // leftButton.addEventListener('mouseup', () => {
-    //     keys[37] = false;
-    //     keys[38] = false; // Release acceleration when left button is released
-    // });
-    // leftButton.addEventListener('touchstart', () => {
-    //     keys[37] = true;
-    //     keys[38] = true; // Add acceleration when left button is touched
-    // });
-    // leftButton.addEventListener('touchend', () => {
-    //     keys[37] = false;
-    //     keys[38] = false; // Release acceleration when left touch ends
-    // });
-
-    // rightButton.addEventListener('mousedown', () => {
-    //     keys[39] = true;
-    //     keys[38] = true; // Add acceleration when right button is pressed
-    // });
-    // rightButton.addEventListener('mouseup', () => {
-    //     keys[39] = false;
-    //     keys[38] = false; // Release acceleration when right button is released
-    // });
-    // rightButton.addEventListener('touchstart', () => {
-    //     keys[39] = true;
-    //     keys[38] = true; // Add acceleration when right button is touched
-    // });
-    // rightButton.addEventListener('touchend', () => {
-    //     keys[39] = false;
-    //     keys[38] = false; // Release acceleration when right touch ends
-    // });
-
-    // accelerateButton.addEventListener('mousedown', () => {
-    //     keys[38] = true;
-    //     // Start game from splash screen when center button is pressed
-    //     if (splashInterval) {
-    //         clearInterval(splashInterval);
-    //         splashInterval = null;
-    //         remainingTime = 30000; // Reset timer
-    //         player.position = 10; // Reset player position
-    //         player.speed = 0; // Reset player speed
-    //         lastStageReached = 0; // Reset stage progress
-    //         gameInterval = setInterval(renderGameFrame, 1000 / 60);
-    //         initEngineSound();
-    //     }
-    // });
-    // accelerateButton.addEventListener('mouseup', () => (keys[38] = false));
-    // accelerateButton.addEventListener('touchstart', () => {
-    //     keys[38] = true;
-    //     // Start game from splash screen when center button is touched
-    //     if (splashInterval) {
-    //         clearInterval(splashInterval);
-    //         splashInterval = null;
-    //         remainingTime = 30000; // Reset timer
-    //         player.position = 10; // Reset player position
-    //         player.speed = 0; // Reset player speed
-    //         lastStageReached = 0; // Reset stage progress
-    //         gameInterval = setInterval(renderGameFrame, 1000 / 60);
-    //         initEngineSound();
-    //     }
-    // });
-    // accelerateButton.addEventListener('touchend', () => (keys[38] = false));
-
     // Add touch controls
     let isTouching = false;
     let touchX = 0;
     let touchY = 0;
     const touchPad = document.getElementById('touch-pad');
+    // TODO: style it
     const touchCoordDisplay = document.createElement('div');
     touchCoordDisplay.style.position = 'absolute';
     touchCoordDisplay.style.color = 'white';
@@ -208,7 +136,7 @@ const init = () => {
         if (y < -0.3) {
             keys[38] = false; // Release acceleration
             keys[40] = true; // Apply brake
-        } else if (y > 0.1) {
+        } else if (y > 0.3) {
             keys[38] = true; // Apply acceleration
             keys[40] = false; // Release brake
         } else {
@@ -223,19 +151,9 @@ const init = () => {
         e.preventDefault();
         isTouching = true;
         updateTouchCoordinates(e, this);
-        keys[38] = true; // Set acceleration key when touch starts
 
         // Start game from splash screen
-        if (splashInterval) {
-            clearInterval(splashInterval);
-            splashInterval = null;
-            remainingTime = 30000; // Reset timer
-            player.position = 10; // Reset player position
-            player.speed = 0; // Reset player speed
-            lastStageReached = 0; // Reset stage progress
-            gameInterval = setInterval(renderGameFrame, 1000 / 60);
-            initEngineSound();
-        }
+        if (!isGameStarted) startGame();
     });
 
     touchPad.addEventListener('touchmove', function (e) {
@@ -251,25 +169,7 @@ const init = () => {
         keys[39] = false; // Release right key
     });
 
-    // Modify the game loop to handle touch controls
-    const handleTouchControls = () => {
-        if (isTouching) {
-            // Accelerate when touching
-            keys[38] = true;
-            // Turn based on touch position
-            const halfWidth = canvas.width / 2;
-            keys[37] = touchX < halfWidth; // Left
-            keys[39] = touchX >= halfWidth; // Right
-        } else {
-            // Release acceleration when not touching
-            keys[38] = false;
-            keys[37] = false;
-            keys[39] = false;
-        }
-    };
-
     generateRoad();
-    // console.log('road', road);
 };
 
 //renders one frame
@@ -280,12 +180,6 @@ const renderGameFrame = () => {
 
     // Draw debug information
     drawDebugInfo({ player, road, roadParam });
-
-    // --------------------------
-    // -- Update the NPC state --
-    // --------------------------
-    npc.speed = Math.min(npc.speed, npc.maxSpeed); //maximum speed
-    npc.position += npc.speed;
 
     // --------------------------
     // -- Update the car state --
@@ -318,40 +212,40 @@ const renderGameFrame = () => {
     });
 
     // Update background music
-    updateBackgroundMusic('racing', player.speed, player.maxSpeed);
+    // updateBackgroundMusic('racing', player.speed, player.maxSpeed);
 
-    // car turning
-    let carSprite;
+    // car turning painting on screen,
+    // commented since no player car on screen
+    // let carSprite;
     if (keys[37]) {
         // 37 left
         if (player.speed > 0) {
             player.posx -= player.turning;
         }
-        carSprite = {
-            a: car_4,
-            x: 117,
-            y: 190,
-        };
+        //     carSprite = {
+        //         a: car_4,
+        //         x: 117,
+        //         y: 190,
+        //     };
     } else if (keys[39]) {
         // 39 right
         if (player.speed > 0) {
             player.posx += player.turning;
         }
-        carSprite = {
-            a: car_8,
-            x: 125,
-            y: 190,
-        };
-    } else {
-        carSprite = {
-            a: car,
-            x: 125,
-            y: 190,
-        };
+        //     carSprite = {
+        //         a: car_8,
+        //         x: 125,
+        //         y: 190,
+        //     };
+        // } else {
+        //     carSprite = {
+        //         a: car,
+        //         x: 125,
+        //         y: 190,
+        //     };
     }
 
     const spriteBuffer = [];
-    const npcSpriteBuffer = [];
 
     // --------------------------
     // --   Render the road    --
@@ -404,6 +298,7 @@ const renderGameFrame = () => {
     // Drawing the background
     if (currentSegment.curve === undefined) {
         debugger;
+        //TODO: check this
     }
     drawBackground(currentSegment.curve);
 
@@ -578,7 +473,6 @@ const renderGameFrame = () => {
     // pinta los sprites del decorado
     let sprite;
     while ((sprite = spriteBuffer.pop())) {
-        // console.log(' * sprite', sprite);
         drawSprite(sprite);
     }
 
@@ -593,20 +487,6 @@ const renderGameFrame = () => {
     //     s: 1,
     //     ymax: render.height,
     // });
-
-    // --------------------------
-    // --     Draw the npc     --
-    // --------------------------
-
-    // INTENTO 1
-    // pinta 1 npc - testing dumb
-    let npcDumb;
-    // esta pintando el sprite dumb del npcDumb coche ahí delante
-    while ((npcDumb = npcSpriteBuffer.pop())) {
-        // console.log(' * npcDumb', npcDumb);
-        // drawImage(npcDumb.src, npcDumb.pos, 1, 1);
-        drawNpcSprite(npcDumb);
-    }
 
     // --------------------------
     // --     Draw the hud     --
@@ -641,7 +521,7 @@ const renderGameFrame = () => {
 
     // const currentTimeString = "" + min + ":" + sec;
 
-    printa({ currentTime: now, timer: 1000 });
+    printa();
 };
 
 ////////////////// SPLASH //////////////////
@@ -649,12 +529,23 @@ const renderGameFrame = () => {
 // splash
 const splashScreen = () => {
     renderSplashFrame();
+
     if (keys[32]) {
-        initEngineSound();
-        // initBackgroundMusic();
-        updateBackgroundMusic('racing');
+        if (!isGameStarted) startGame();
+    }
+};
+
+const startGame = () => {
+    isGameStarted = true;
+    if (splashInterval) {
         clearInterval(splashInterval);
-        gameInterval = setInterval(renderGameFrame, 24);
+        splashInterval = null;
+        remainingTime = 30000; // Reset timer
+        player.position = 10; // Reset player position
+        player.speed = 0; // Reset player speed
+        lastStageReached = 0; // Reset stage progress
+        gameInterval = setInterval(renderGameFrame, 1000 / 60);
+        initEngineSound();
     }
 };
 
@@ -663,7 +554,6 @@ const start = () => {
     spritesheet.onload = function () {
         init();
         splashInterval = setInterval(splashScreen, 60);
-        // console.log('splashInterval', splashInterval);
     };
     spritesheet.src = 'spritesheet.high.bw.png';
 };

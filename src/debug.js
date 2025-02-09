@@ -15,6 +15,11 @@ let fps = 0;
 // Toggle debug mode
 export const toggleDebug = () => {
     DEBUG.enabled = !DEBUG.enabled;
+    // Toggle all debug information flags
+    DEBUG.showFPS = DEBUG.enabled;
+    DEBUG.showPlayerInfo = DEBUG.enabled;
+    DEBUG.showStageInfo = DEBUG.enabled;
+    DEBUG.showRoadInfo = DEBUG.enabled;
 };
 
 // Debug information display
