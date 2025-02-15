@@ -34,6 +34,7 @@ import // initBackgroundMusic,
 // updateBackgroundMusic,
 // stopBackgroundMusic,
 './audio/backgroundMusic.js';
+import { initControls, isAccelerating, isBraking, isTurningLeft, isTurningRight } from './controllers/gameControls.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -63,79 +64,10 @@ const init = () => {
 
     resize(render);
 
-    //register key handeling:
-    document.addEventListener('keydown', function (e) {
-        keys[e.keyCode] = true;
-    });
-    document.addEventListener('keyup', function (e) {
-        keys[e.keyCode] = false;
-        if (e.keyCode === 68) {
-            // 'D' key
-            toggleDebug();
-        }
-    });
-
-    // Add touch controls
-    let isTouching = false;
-    let touchX = 0;
-    let touchY = 0;
-    const touchPad = document.getElementById('touch-pad');
-    // TODO: style it
-    const touchCoordDisplay = document.createElement('div');
-    touchCoordDisplay.style.position = 'absolute';
-    touchCoordDisplay.style.color = 'white';
-    touchCoordDisplay.style.padding = '5px';
-    touchCoordDisplay.style.fontSize = '12px';
-    touchPad.appendChild(touchCoordDisplay);
-
-    const updateTouchCoordinates = (e, element) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-
-        const rect = element.getBoundingClientRect();
-
-        const x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-        const y = -(((touch.clientY - rect.top) / rect.height) * 2 - 1);
-
-        // Set directional controls based on x threshold values
-        keys[37] = x < -0.3; // Left key when x < -0.3
-        keys[39] = x > 0.3; // Right key when x > 0.3
-
-        // Set acceleration based on y threshold values
-        if (y < -0.3) {
-            keys[38] = false; // Release acceleration
-            keys[40] = true; // Apply brake
-        } else if (y > 0.3) {
-            keys[38] = true; // Apply acceleration
-            keys[40] = false; // Release brake
-        } else {
-            keys[38] = false; // No acceleration in neutral zone
-            keys[40] = false; // No brake in neutral zone
-        }
-
-        touchCoordDisplay.textContent = `X: ${x.toFixed(2)} Y: ${y.toFixed(2)}`;
-    };
-
-    touchPad.addEventListener('touchstart', function (e) {
-        e.preventDefault();
-        isTouching = true;
-        updateTouchCoordinates(e, this);
-
-        // Start game from splash screen
-        if (!isGameStarted) startGame();
-    });
-
-    touchPad.addEventListener('touchmove', function (e) {
-        e.preventDefault();
-        updateTouchCoordinates(e, this);
-    });
-
-    touchPad.addEventListener('touchend', function (e) {
-        e.preventDefault();
-        isTouching = false;
-        keys[38] = false; // Release acceleration key when touch ends
-        keys[37] = false; // Release left key
-        keys[39] = false; // Release right key
+    initControls({
+         startGame,
+        toggleDebug,
+        isGameStarted
     });
 
     generateRoad();
@@ -156,11 +88,9 @@ const renderGameFrame = () => {
         }
     } else {
         // read acceleration controls
-        if (keys[38]) {
-            // 38 up
+        if (isAccelerating()) {
             player.speed += player.acceleration;
-        } else if (keys[40]) {
-            // 40 down
+        } else if (isBraking()) {
             player.speed -= player.breaking;
         } else {
             player.speed -= player.deceleration;
@@ -177,38 +107,15 @@ const renderGameFrame = () => {
         acceleration: player.acceleration,
     });
 
-    // Update background music
-    // updateBackgroundMusic('racing', player.speed, player.maxSpeed);
-
-    // car turning painting on screen,
-    // commented since no player car on screen
-    // let carSprite;
-    if (keys[37]) {
-        // 37 left
+    // car turning
+    if (isTurningLeft()) {
         if (player.speed > 0) {
             player.posx -= player.turning;
         }
-        //     carSprite = {
-        //         a: car_4,
-        //         x: 117,
-        //         y: 190,
-        //     };
-    } else if (keys[39]) {
-        // 39 right
+    } else if (isTurningRight()) {
         if (player.speed > 0) {
             player.posx += player.turning;
         }
-        //     carSprite = {
-        //         a: car_8,
-        //         x: 125,
-        //         y: 190,
-        //     };
-        // } else {
-        //     carSprite = {
-        //         a: car,
-        //         x: 125,
-        //         y: 190,
-        //     };
     }
 
     const spriteBuffer = [];
@@ -499,10 +406,6 @@ const renderGameFrame = () => {
 ////////////////// SPLASH //////////////////
 const splashScreen = () => {
     renderSplashFrame();
-
-    if (keys[32]) {
-        if (!isGameStarted) startGame();
-    }
 };
 
 const startGame = () => {
