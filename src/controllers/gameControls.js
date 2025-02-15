@@ -7,7 +7,6 @@ export const keys = [];
 export const initControls = ({ startGame, toggleDebug, isGameStarted }) => {
     // Keyboard controls
     document.addEventListener('keydown', (e) => {
-        console.log('hit', e.keyCode)
         keys[e.keyCode] = true;
         if (keys[32]) {
             if (!isGameStarted) startGame();

@@ -35,6 +35,7 @@ import // initBackgroundMusic,
 // stopBackgroundMusic,
 './audio/backgroundMusic.js';
 import { initControls, isAccelerating, isBraking, isTurningLeft, isTurningRight } from './controllers/gameControls.js';
+import { updateCarPhysics } from './physics/carPhysics.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -82,23 +83,7 @@ const renderGameFrame = () => {
     // --------------------------
     // -- Update the car state --
     // --------------------------
-    if (Math.abs(lastDelta) > 130) {
-        if (player.speed > 3) {
-            player.speed -= 0.2;
-        }
-    } else {
-        // read acceleration controls
-        if (isAccelerating()) {
-            player.speed += player.acceleration;
-        } else if (isBraking()) {
-            player.speed -= player.breaking;
-        } else {
-            player.speed -= player.deceleration;
-        }
-    }
-    player.speed = Math.max(player.speed, 0); //cannot go in reverse
-    player.speed = Math.min(player.speed, player.maxSpeed); //maximum speed
-    player.position += player.speed;
+    updateCarPhysics({ lastDelta });
 
     // Update engine sound
     updateEngineSound({
@@ -106,17 +91,6 @@ const renderGameFrame = () => {
         maxSpeed: player.maxSpeed,
         acceleration: player.acceleration,
     });
-
-    // car turning
-    if (isTurningLeft()) {
-        if (player.speed > 0) {
-            player.posx -= player.turning;
-        }
-    } else if (isTurningRight()) {
-        if (player.speed > 0) {
-            player.posx += player.turning;
-        }
-    }
 
     const spriteBuffer = [];
 
@@ -143,16 +117,6 @@ const renderGameFrame = () => {
             time: 100, // 24 frames at 24fps = 1 second
         });
     }
-
-    // const CHECKPOINT_PHASE =
-    //     absoluteIndex > roadParam.zoneSection &&
-    //     absoluteIndex < roadParam.zoneSection + 100;
-
-    // // --------------------------
-    // // --   Checkpoint!   --
-    // // --------------------------
-    // if (CHECKPOINT_PHASE) {
-    // }
 
     // --------------------------
     // --   Finish!   --
@@ -341,18 +305,6 @@ const renderGameFrame = () => {
     }
 
     // --------------------------
-    // --     Draw the car     --
-    // --------------------------
-
-    // drawSprite({
-    //     i: carSprite.a,
-    //     x: carSprite.x,
-    //     y: carSprite.y,
-    //     s: 1,
-    //     ymax: render.height,
-    // });
-
-    // --------------------------
     // --     Draw the hud     --
     // --------------------------
     drawString({
@@ -413,13 +365,18 @@ const startGame = () => {
     if (splashInterval) {
         clearInterval(splashInterval);
         splashInterval = null;
-        remainingTime = 30000; // Reset timer
+        remainingTime = 50000; // Reset timer
         player.position = 10; // Reset player position
         player.speed = 0; // Reset player speed
         console.log(player);
         lastStageReached = 0; // Reset stage progress
         gameInterval = setInterval(renderGameFrame, 1000 / 60);
         initEngineSound();
+        initControls({
+            startGame,
+           toggleDebug,
+           isGameStarted
+       });
     }
 };
 
