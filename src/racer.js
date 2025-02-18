@@ -365,7 +365,7 @@ const startGame = () => {
     if (splashInterval) {
         clearInterval(splashInterval);
         splashInterval = null;
-        remainingTime = 50000; // Reset timer
+        remainingTime = 100000; // Reset timer
         player.position = 10; // Reset player position
         player.speed = 0; // Reset player speed
         console.log(player);
