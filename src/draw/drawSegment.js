@@ -54,17 +54,29 @@ export const drawSegment = ({
     );
 
     // draw the lane line
-    drawTrapez(
-        position1,
-        scale1,
-        offset1,
-        position2,
-        scale2,
-        offset2,
-        -0.18,
-        -0.15,
-        colors.lane
-    );
+     drawTrapez(
+         position1,
+         scale1,
+         offset1,
+         position2,
+         scale2,
+         offset2,
+         0.01,
+         -0.01,
+         colors.lane
+     );
+
+    // drawTrapez(
+    //     position1,
+    //     scale1,
+    //     offset1,
+    //     position2,
+    //     scale2,
+    //     offset2,
+    //     -0.18,
+    //     -0.15,
+    //     colors.lane
+    // );
 
     // draw the other lane line
     // drawTrapez(
@@ -79,15 +91,15 @@ export const drawSegment = ({
     //     colors.lane
     // );
 
-    drawTrapez(
-        position1,
-        scale1,
-        offset1,
-        position2,
-        scale2,
-        offset2,
-        0.15,
-        0.18,
-        colors.lane
-    );
+    // drawTrapez(
+    //     position1,
+    //     scale1,
+    //     offset1,
+    //     position2,
+    //     scale2,
+    //     offset2,
+    //     0.15,
+    //     0.18,
+    //     colors.lane
+    // );
 };

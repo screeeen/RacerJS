@@ -212,6 +212,7 @@ const renderGameFrame = () => {
         const currentPhase = stages[currentStagePos]
             ? stages[currentStagePos]
             : stages[0];
+            
         const lastPhase = stages[lastStagePos]
             ? stages[lastStagePos]
             : stages[0];

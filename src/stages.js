@@ -11,8 +11,8 @@ export const getStages = (alternate) => [
             background: [136, 136, 136],
             grass: alternate ? [136, 136, 136] : [102, 102, 102],
             border: alternate ? [238, 238, 238] : [204, 204, 204],
-            road: alternate ? [34, 34, 34] : [68, 68, 68],
-            lane: alternate ? [170, 170, 170] : [238, 238, 238],
+            road: alternate ? [34, 34, 34] : [34, 34, 34],
+            lane: alternate ? [170, 170, 170] : [34, 34, 34]
         },
     },
     {
