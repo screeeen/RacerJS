@@ -367,8 +367,9 @@ const startGame = () => {
     if (splashInterval) {
         clearInterval(splashInterval);
         gameInterval = setInterval(renderGameFrame, 1000 / 60);
+        // get this logic into a function
         splashInterval = null;
-        remainingTime = 10000; // Reset timer
+        remainingTime = 100000; // Reset timer
         lastStageReached = 0; // Reset stage progress
         resetPlayer(player)
         console.log(player);
