@@ -48,7 +48,7 @@ export const drawDebugInfo = ({ player, road, roadParam, absoluteIndex }) => {
         {
             condition: DEBUG.showPlayerInfo,
             items: [
-                () => `Speed: ${Math.round(player.speed)}`,
+                () => `Speed RRR: ${Math.round(player.speed)}`,
                 () => `Pos X: ${player.posx.toFixed(2)}`,
                 () => `Pos Z: ${player.position.toFixed(2)}`,
             ],
