@@ -10,6 +10,7 @@ import {
     // car_8,
     render,
     player,
+    resetPlayer,
     // npc,
     // npc_sprite_dumb_spriteSheet,
 } from './gameElements.js';
@@ -43,10 +44,10 @@ import { updateCarPhysics } from './physics/carPhysics.js';
 export const canvas = document.getElementById('c');
 export const context = canvas.getContext('2d');
 export const startTime = new Date();
-export let remainingTime = 10000; // 30 seconds in milliseconds
-export let isGameStarted = false;
-export let lastStageReached = 0;
-export const BONUS_TIME = 1000; // 5 seconds bonus time per stage
+export let remainingTime
+export let isGameStarted
+export let lastStageReached
+export const BONUS_TIME = 0; // 5 seconds bonus time per stage
 
 export const spritesheet = new Image();
 spritesheet.src = 'spritesheet.high.bw.png';
@@ -365,13 +366,12 @@ const startGame = () => {
     isGameStarted = true;
     if (splashInterval) {
         clearInterval(splashInterval);
-        splashInterval = null;
-        remainingTime = 100000; // Reset timer
-        player.position = 10; // Reset player position
-        player.speed = 0; // Reset player speed
-        console.log(player);
-        lastStageReached = 0; // Reset stage progress
         gameInterval = setInterval(renderGameFrame, 1000 / 60);
+        splashInterval = null;
+        remainingTime = 10000; // Reset timer
+        lastStageReached = 0; // Reset stage progress
+        resetPlayer(player)
+        console.log(player);
         initEngineSound();
         initControls({
             startGame,

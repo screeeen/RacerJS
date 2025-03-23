@@ -3,9 +3,12 @@ import { isAccelerating, isBraking, isTurningLeft, isTurningRight } from '../con
 
 export const updateCarPhysics = ({ lastDelta }) => {
     // Handle speed based on collision detection
-    if (Math.abs(lastDelta) > 130) {
-        if (player.speed > 3) {
-            player.speed -= 0.2;
+    if (Math.abs(lastDelta) > 130) { //limite carretera
+        if (isAccelerating()) {
+            if (player.speed > 3) player.speed -= 0.2;
+            if (player.speed < 3) player.speed += 0.01;
+        } else {
+            player.speed -= player.deceleration;
         }
     } else {
         // Handle acceleration controls

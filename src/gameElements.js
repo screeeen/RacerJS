@@ -21,6 +21,18 @@ export const player = {
     maxSpeed: 40,
 };
 
+// this is somehow stupid
+export const resetPlayer = (player) => {
+    player.position= 10;
+    player.speed= 0;
+    player.acceleration= 0.02;
+    player.deceleration= 0.2;
+    player.breaking= 0.6;
+    player.turning= 6.0;
+    player.posx= 0.5;
+    player.maxSpeed= 40;
+}
+
 //sprites
 export const car = {
     x: 0,
@@ -99,24 +111,3 @@ export const logo = {
 
 export const backgroundColor = getBackgroundColor();
 
-// export const npc_sprite_dumb_spriteSheet = {
-//     x: 0,
-//     y: 0,
-//     w: 160,
-//     h: 60,
-// };
-
-// export const imgCarNpc = new Image();
-// imgCarNpc.src = 'sprite_npc.png';
-
-// export const npc = {
-//     position: 12,
-//     speed: 20,
-//     acceleration: 0.05,
-//     deceleration: 0.2,
-//     breaking: 0.6,
-//     turning: 6.0,
-//     posx: 0.5,
-//     maxSpeed: 30,
-//     spriteSrc: 'sprite_npc.png',
-// };

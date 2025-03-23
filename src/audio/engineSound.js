@@ -8,11 +8,11 @@ let currentGear = 1;
 
 // Gear thresholds and characteristics
 const gearConfig = {
-    1: { speedThreshold: 0.04, freqMultiplier: 1.2, filterMod: 1.4 },
-    2: { speedThreshold: 0.12, freqMultiplier: 1.0, filterMod: 1.3 },
-    3: { speedThreshold: 0.2, freqMultiplier: 0.7, filterMod: 1.4 },
-    4: { speedThreshold: 0.6, freqMultiplier: 0.6, filterMod: 1.6 },
-    5: { speedThreshold: 0.8, freqMultiplier: 0.5, filterMod: 1.8 },
+    1: { speedThreshold: 0.04, freqMultiplier: 1.4, filterMod: 1.2, baseFreq: 35 },
+    2: { speedThreshold: 0.12, freqMultiplier: 1.2, filterMod: 1.4, baseFreq: 30 },
+    3: { speedThreshold: 0.2, freqMultiplier: 1.0, filterMod: 1.6, baseFreq: 28 },
+    4: { speedThreshold: 0.6, freqMultiplier: 0.8, filterMod: 1.8, baseFreq: 25 },
+    5: { speedThreshold: 0.8, freqMultiplier: 0.6, filterMod: 2.0, baseFreq: 22 },
 };
 
 // Initialize audio context and nodes
@@ -24,7 +24,7 @@ export const initEngineSound = () => {
 
     // Create oscillator for base engine sound
     oscillator = audioContext.createOscillator();
-    oscillator.type = 'sawtooth';
+    oscillator.type = 'square';
 
     // Create gain node for volume control
     gainNode = audioContext.createGain();
@@ -68,12 +68,12 @@ export const updateEngineSound = ({ speed, maxSpeed, acceleration }) => {
     }
 
     // Calculate base frequency based on speed and current gear
-    const minFreq = isIdle ? 25 : 30;
-    const maxFreq = 200;
+    const baseFreq = gearConfig[currentGear].baseFreq;
+    const maxFreq = 250;
     const gearFreqMod = gearConfig[currentGear].freqMultiplier;
     const frequency = isIdle
-        ? minFreq + Math.sin(audioContext.currentTime * 2) * 2 // Add subtle fluctuation to idle sound
-        : (minFreq + (maxFreq - minFreq) * speedRatio) * gearFreqMod;
+        ? baseFreq  
+        : (baseFreq + (maxFreq - baseFreq) * speedRatio) * gearFreqMod;
 
     // Smooth frequency transition
     oscillator.frequency.setTargetAtTime(
