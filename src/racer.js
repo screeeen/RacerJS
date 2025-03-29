@@ -50,7 +50,7 @@ export let lastStageReached
 export const BONUS_TIME = 0; // 5 seconds bonus time per stage
 
 export const spritesheet = new Image();
-spritesheet.src = 'spritesheet.high.bw.png';
+spritesheet.src = 'spritesheet.test.png';
 export const keys = []; // teclas
 
 let lastDelta = 0;
@@ -144,9 +144,6 @@ const renderGameFrame = () => {
         currentSegment.curve = 0; // Provide a default value to prevent rendering issues
     }
     drawBackground(currentSegment.curve);
-
-    // Draw debug information
-    drawDebugInfo({ player, road, roadParam, absoluteIndex });
 
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
@@ -342,6 +339,9 @@ const renderGameFrame = () => {
 
     drawString({ string: 'Time: ' + remainingSec, pos: { x: 120, y: 10 } });
 
+    // Draw debug information
+    drawDebugInfo({ player, road, roadParam, absoluteIndex });
+    
     // Game over when time runs out
     if (remainingTime <= 0) {
         clearInterval(gameInterval);
@@ -388,7 +388,7 @@ const start = () => {
         init();
         splashInterval = setInterval(splashScreen, 60);
     };
-    spritesheet.src = 'spritesheet.high.bw.png';
+    spritesheet.src = 'spritesheet.test.png';
 };
 
 (() => start(spritesheet))();

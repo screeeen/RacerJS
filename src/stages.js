@@ -12,12 +12,12 @@ export const getStages = (alternate) => [
             grass: alternate ? [136, 136, 136] : [102, 102, 102],
             border: alternate ? [238, 238, 238] : [204, 204, 204],
             road: alternate ? [34, 34, 34] : [34, 34, 34],
-            lane: alternate ? [170, 170, 170] : [34, 34, 34]
+            lane: alternate ? [170, 170, 170] : [34, 34, 34]    
         },
     },
     {
         position: 1,
-        name: 'sandy',
+        name: 'casas',
         startIndex: 1000,
         endIndex: 2000,
         colors: {
@@ -30,7 +30,7 @@ export const getStages = (alternate) => [
     },
     {
         position: 2,
-        name: 'water',
+        name: 'desierto',
         startIndex: 3000,
         endIndex: 4000,
         colors: {
@@ -43,41 +43,41 @@ export const getStages = (alternate) => [
     },
     {
         position: 3,
-        name: 'rocky',
+        name: 'palmeras',
         startIndex: 5000,
         endIndex: 6000,
         colors: {
-            background: [90, 90, 100],
-            grass: alternate ? [10, 10, 10] : [0, 10, 12],
-            border: alternate ? [0, 0, 0] : [200, 200, 200],
-            road: alternate ? [58, 58, 58] : [68, 68, 68],
-            lane: alternate ? [170, 170, 170] : [170, 170, 170],
+            background: [70,91,203],
+            grass: [30,26,117],
+            border: alternate ? [50,75,161] : [45,70,156],
+            road: alternate ? [45,70,156] : [50,75,161],
+            lane: alternate ? [45,70,156] : [110, 110, 190],
         },
     },
     {
         position: 4,
-        name: 'palm',
+        name: 'tundra',
         startIndex: 3100,
         endIndex: 4000,
         colors: {
-            background: [10, 0, 0],
-            grass: alternate ? [10, 10, 10] : [10, 10, 10],
-            border: alternate ? [0, 0, 0] : [0, 0, 0],
-            road: alternate ? [10, 34, 34] : [34, 34, 34],
-            lane: alternate ? [10, 170, 170] : [170, 170, 170],
+            background: [114, 158, 128],
+            grass: [14, 178, 128],
+            road: [9, 201, 166],
+            lane: [212, 201, 166],
+            border: [15, 201, 166],
         },
     },
     {
         position: 5,
-        name: 'industrial',
+        name: 'tunel',
         startIndex: 4100,
         endIndex: 5000,
         colors: {
-            background: [180, 180, 180],
-            grass: alternate ? [160, 160, 160] : [150, 150, 150],
-            border: alternate ? [200, 200, 200] : [190, 190, 190],
-            road: alternate ? [100, 100, 100] : [120, 120, 120],
-            lane: alternate ? [220, 220, 220] : [210, 210, 210],
+            background: [0,0,0],
+            grass:  [0,0,0],
+            border: alternate ? [10, 10,10] : [20,20,20],
+            road: alternate ? [0,0,0] : [5,5,5],
+            lane: alternate ? [10, 10,10] : [20,20,20]
         },
     },
     {

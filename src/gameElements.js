@@ -74,10 +74,17 @@ export const tree = {
     h: 32,
 };
 
+export const bush = {
+    x: 468,
+    y: 90,
+    w: 30,
+    h: 8,
+};
+
 export const palm = {
-    x: 416,
+    x: 417,
     y: 41,
-    w: 24,
+    w: 23,
     h: 56,
 };
 
@@ -99,8 +106,31 @@ export const house = {
     x: 440,
     y: 41,
     w: 72,
-    h: 42,
+    h: 36,
 };
+
+export const ruins_arc = {
+    x: 336,
+    y: 43,
+    w: 80,
+    h: 50,
+};
+
+export const tower = {
+    x: 323,
+    y: 44,
+    w: 12,
+    h: 125,
+};
+
+export const house_flat = {
+    x: 248,
+    y: 139,
+    w: 72,
+    h: 30,
+};
+
+
 
 export const logo = {
     x: 161,

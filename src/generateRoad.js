@@ -1,10 +1,5 @@
 import {
-    house,
-    rock,
-    palm,
-    bridge,
-    tree,
-    // npc_sprite_dumb_spriteSheet,
+    house, rock, bridge, tree, house_flat, bush, tower, ruins_arc, palm
 } from './gameElements.js';
 import { r } from './utils.js';
 export const road = [];
@@ -113,19 +108,21 @@ export const generateRoad = () => {
             const PUENTES = currentStage === 2;
             const DESIERTO = currentStage === 3;
             const PALMERAS = currentStage === 4;
+            const TUNDRA = currentStage === 5;
             const TUNEL = currentStage === 6;
 
             const freqCasas = 20;
             const freqPuentes = 10;
             const freqPalmeras = 6;
             const freqCactus = r() < 0.09;
+            const freqTundra = r() < 0.03;
             const freqTunel = 0.5; // Frequent tunnel walls for continuous effect
 
             if (CASAS && i % freqCasas === 0) {
                 const chosenValue = r() < 0.5 ? -0.55 : 1.1;
                 sprite = { type: house, pos: chosenValue };
             } else if (PUENTES && i % freqPuentes === 0) {
-                sprite = { type: bridge, pos: 0.8 };
+                sprite = { type: tower, pos: 0.8 };
             } else if (PALMERAS && i % freqPalmeras === 0) {
                 // Alternate between left and right side of the road
                 sprite = {
@@ -133,7 +130,7 @@ export const generateRoad = () => {
                     pos: i % (freqPalmeras * 2) < freqPalmeras ? -0.55 : 1.1,
                 };
             } else if (DESIERTO && freqCactus) {
-                var spriteType = [tree, rock][Math.floor(r() * 1.9)];
+                var spriteType = [tree, rock, bush][Math.floor(r() * 2.9)];
                 sprite = { type: spriteType, pos: 0.9 + 4 * r() };
                 if (r() < 0.5) {
                     sprite.pos = -sprite.pos;
@@ -145,6 +142,12 @@ export const generateRoad = () => {
                     pos: 0.8,
                     isTunnel: true, // Mark as tunnel for special rendering
                 };
+            } else if (TUNDRA && freqTundra) {
+                var spriteType = [rock, bush, ruins_arc][Math.floor(r() * 2.9)];
+                sprite = { type: spriteType, pos: 0.9 + 4 * r() };
+                if (r() < 0.5) {
+                    sprite.pos = -sprite.pos;
+                }
             } else {
                 sprite = false;
             }
