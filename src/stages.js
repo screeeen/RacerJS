@@ -4,6 +4,8 @@
 export const getStages = (alternate) => [
     {
         position: 0,
+        isBackground: true,
+        backgroundImg: 'clouds',
         name: 'normal',
         startIndex: 1000, // comienzo de la transi
         endIndex: 2000, // final de la transi
@@ -17,6 +19,8 @@ export const getStages = (alternate) => [
     },
     {
         position: 1,
+        isBackground: true,
+        backgroundImg: 'clouds',
         name: 'casas',
         startIndex: 1000,
         endIndex: 2000,
@@ -31,6 +35,8 @@ export const getStages = (alternate) => [
     {
         position: 2,
         name: 'desierto',
+        isBackground: false,
+        backgroundImg: 'clouds',
         startIndex: 3000,
         endIndex: 4000,
         colors: {
@@ -44,6 +50,8 @@ export const getStages = (alternate) => [
     {
         position: 3,
         name: 'palmeras',
+        isBackground: true,
+        backgroundImg: 'clouds',
         startIndex: 5000,
         endIndex: 6000,
         colors: {
@@ -57,6 +65,8 @@ export const getStages = (alternate) => [
     {
         position: 4,
         name: 'tundra',
+        isBackground: true,
+        backgroundImg: 'clouds',
         startIndex: 3100,
         endIndex: 4000,
         colors: {
@@ -70,6 +80,8 @@ export const getStages = (alternate) => [
     {
         position: 5,
         name: 'tunel',
+        isBackground: true,
+        backgroundImg: 'clouds',
         startIndex: 4100,
         endIndex: 5000,
         colors: {
@@ -83,6 +95,8 @@ export const getStages = (alternate) => [
     {
         position: 6,
         name: 'monument',
+        isBackground: true,
+        backgroundImg: 'clouds',
         startIndex: 5100,
         endIndex: 6000,
         colors: {

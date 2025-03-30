@@ -98,8 +98,8 @@ export const rock = {
 export const bridge = {
     x: 336,
     y: 98,
-    w: 336,
-    h: 88,
+    w: 8,
+    h: 8,
 };
 
 export const house = {

@@ -110,13 +110,14 @@ export const generateRoad = () => {
             const PALMERAS = currentStage === 4;
             const TUNDRA = currentStage === 5;
             const TUNEL = currentStage === 6;
+            const MONUMENT = currentStage === 7;
 
             const freqCasas = 20;
             const freqPuentes = 10;
             const freqPalmeras = 6;
             const freqCactus = r() < 0.09;
             const freqTundra = r() < 0.03;
-            const freqTunel = 0.5; // Frequent tunnel walls for continuous effect
+            const freqTunel = 10;
 
             if (CASAS && i % freqCasas === 0) {
                 const chosenValue = r() < 0.5 ? -0.55 : 1.1;
@@ -136,18 +137,17 @@ export const generateRoad = () => {
                     sprite.pos = -sprite.pos;
                 }
             } else if (TUNEL && i % freqTunel === 0) {
-                // Add tunnel walls on both sides
-                sprite = {
-                    type: bridge,
-                    pos: 0.8,
-                    isTunnel: true, // Mark as tunnel for special rendering
-                };
+                const chosenValue = r() < 0.5 ? -0.55 : 1.1;
+                sprite = { type: bridge, pos: chosenValue };
             } else if (TUNDRA && freqTundra) {
                 var spriteType = [rock, bush, ruins_arc][Math.floor(r() * 2.9)];
                 sprite = { type: spriteType, pos: 0.9 + 4 * r() };
                 if (r() < 0.5) {
                     sprite.pos = -sprite.pos;
                 }
+            } else if (MONUMENT && i % freqCasas === 0) {
+                const chosenValue = r() < 0.5 ? -0.55 : 1.1;
+                sprite = { type: house_flat, pos: chosenValue };
             } else {
                 sprite = false;
             }

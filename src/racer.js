@@ -57,6 +57,7 @@ let lastDelta = 0;
 let splashInterval;
 let gameInterval;
 let sceneryColor = getBackgroundColor();
+let isBackground = true;
 
 //initialize the game
 const init = () => {
@@ -138,15 +139,15 @@ const renderGameFrame = () => {
         (absoluteIndex - 2) * roadSegmentSize - player.position;
     let currentSegment = road[currentSegmentIndex];
 
-    // Drawing the background
+    
     if (currentSegment.curve === undefined) {
         console.warn('Undefined curve detected in segment');
         currentSegment.curve = 0; // Provide a default value to prevent rendering issues
     }
-    drawBackground(currentSegment.curve);
-
+    
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
+    
 
     let playerPosSegmentHeight = road[absoluteIndex % road.length].height;
     let playerPosNextSegmentHeight =
@@ -167,6 +168,11 @@ const renderGameFrame = () => {
             playerPosRelative;
 
     lastDelta = player.posx - baseOffset * 2;
+
+    
+    // console.log('isBackground',isBackground)
+
+    if (isBackground) drawBackground(currentSegment.curve);
 
     let iter = render.depthOfField;
 
@@ -201,10 +207,7 @@ const renderGameFrame = () => {
         // --   STAGES MECHANICS    --
         // --------------------------
 
-        const stages = getStages(counter < numberOfSegmentPerColor); // que raro
-
-        let currentStagePos =
-            Math.floor(absoluteIndex / roadParam.zoneSection) + 1;
+        const stages = getStages(counter < numberOfSegmentPerColor);
         let lastStagePos = currentStagePos - 1;
 
         const currentPhase = stages[currentStagePos]
@@ -227,21 +230,22 @@ const renderGameFrame = () => {
             t = (absoluteIndex - startIndex) / (endIndex - startIndex);
         }
 
-        drawString({
-            string: '' + 'stage ' + currentStagePos,
-            pos: { x: 2, y: 10 },
-        });
+        // TODO: check why throw errors
+         drawString({
+             string: '' + 'stage ' + currentStagePos,
+             pos: { x: 2, y: 10 },
+         });
 
-        drawString({
-            string: '' + 'transition ' + t.toFixed(2),
-            pos: { x: 2, y: 20 },
-        });
+        // drawString({
+        //     string: '' + 'transition ' + t.toFixed(2),
+        //     pos: { x: 2, y: 20 },
+        // });
 
-        const currentStage = {
-            currentPhase,
-            lastPhase,
-            t,
-        };
+        // const currentStage = {
+        //     currentPhase,
+        //     lastPhase,
+        //     t,
+        // };
 
         const colors = interpolateObjects(
             lastPhase.colors,
@@ -250,6 +254,16 @@ const renderGameFrame = () => {
         );
 
         sceneryColor = colors.background;
+        //TODO: pasarle imagen de background a drawBackground
+        
+        // console.log(currentStagePos)
+        // console.log(stages[currentStagePos].isBackground )
+        // if (stages[currentStagePos].isBackground && stages[currentStagePos].isBackground === false ) {
+        //     console.log('si ', stages[currentStagePos]?.isBackground )
+        //     isBackground = stages[currentStagePos]?.isBackground 
+        // } else {
+            isBackground = true;
+        // }
         // --------------------------
         // --   DRAW SEGMENTS    --
         // --------------------------
@@ -341,7 +355,7 @@ const renderGameFrame = () => {
 
     // Draw debug information
     drawDebugInfo({ player, road, roadParam, absoluteIndex });
-    
+
     // Game over when time runs out
     if (remainingTime <= 0) {
         clearInterval(gameInterval);
