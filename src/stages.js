@@ -34,7 +34,7 @@ export const getStages = (alternate) => [
     },
     {
         position: 2,
-        name: 'desierto',
+        name: 'towers',
         isBackground: false,
         backgroundImg: 'clouds',
         startIndex: 3000,
@@ -49,7 +49,7 @@ export const getStages = (alternate) => [
     },
     {
         position: 3,
-        name: 'palmeras',
+        name: 'desert',
         isBackground: true,
         backgroundImg: 'clouds',
         startIndex: 5000,
@@ -64,7 +64,7 @@ export const getStages = (alternate) => [
     },
     {
         position: 4,
-        name: 'tundra',
+        name: 'palms',
         isBackground: true,
         backgroundImg: 'clouds',
         startIndex: 3100,
@@ -79,7 +79,7 @@ export const getStages = (alternate) => [
     },
     {
         position: 5,
-        name: 'tunel',
+        name: 'tundra',
         isBackground: true,
         backgroundImg: 'clouds',
         startIndex: 4100,
@@ -94,8 +94,8 @@ export const getStages = (alternate) => [
     },
     {
         position: 6,
-        name: 'monument',
-        isBackground: true,
+        name: 'tunel',
+        isBackground: false,
         backgroundImg: 'clouds',
         startIndex: 5100,
         endIndex: 6000,
@@ -105,6 +105,21 @@ export const getStages = (alternate) => [
             border: alternate ? [220, 210, 215] : [210, 200, 205],
             road: alternate ? [150, 140, 145] : [160, 150, 155],
             lane: alternate ? [230, 220, 225] : [220, 210, 215],
+        },
+    },
+    {
+        position: 7,
+        name: 'flat houses',
+        isBackground: true,
+        backgroundImg: 'clouds',
+        startIndex: 5100,
+        endIndex: 6000,
+        colors: {
+            background: [136, 136, 136],
+            grass: alternate ? [136, 136, 136] : [102, 102, 102],
+            border: alternate ? [238, 238, 238] : [204, 204, 204],
+            road: alternate ? [34, 34, 34] : [34, 34, 34],
+            lane: alternate ? [170, 170, 170] : [34, 34, 34]    
         },
     },
 ];

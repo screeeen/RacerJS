@@ -170,7 +170,6 @@ const renderGameFrame = () => {
     lastDelta = player.posx - baseOffset * 2;
 
     
-    // console.log('isBackground',isBackground)
 
     if (isBackground) drawBackground(currentSegment.curve);
 
@@ -223,16 +222,12 @@ const renderGameFrame = () => {
 
         let t = 0;
         if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
-            // console.log('startIndex', startIndex);
-            // console.log('endIndex', endIndex);
-            // console.log('t', t);
-
             t = (absoluteIndex - startIndex) / (endIndex - startIndex);
         }
 
         // TODO: check why throw errors
          drawString({
-             string: '' + 'stage ' + currentStagePos,
+             string: '' + 'comarca ' + currentStagePos,
              pos: { x: 2, y: 10 },
          });
 
@@ -254,15 +249,8 @@ const renderGameFrame = () => {
         );
 
         sceneryColor = colors.background;
-        //TODO: pasarle imagen de background a drawBackground
-        
-        // console.log(currentStagePos)
-        // console.log(stages[currentStagePos].isBackground )
-        // if (stages[currentStagePos].isBackground && stages[currentStagePos].isBackground === false ) {
-        //     console.log('si ', stages[currentStagePos]?.isBackground )
-        //     isBackground = stages[currentStagePos]?.isBackground 
-        // } else {
-            isBackground = true;
+        //TODO: pasarle imagen de background a drawBackground       
+            isBackground = currentPhase.isBackground;
         // }
         // --------------------------
         // --   DRAW SEGMENTS    --
