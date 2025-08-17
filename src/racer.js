@@ -35,18 +35,60 @@ import // initBackgroundMusic,
 // updateBackgroundMusic,
 // stopBackgroundMusic,
 './audio/backgroundMusic.js';
-import { initControls, isAccelerating, isBraking, isTurningLeft, isTurningRight } from './controllers/gameControls.js';
+import {
+    initControls,
+    isAccelerating,
+    isBraking,
+    isTurningLeft,
+    isTurningRight,
+} from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
+import { fsSource, vsSource } from './shaders/shaders.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
 // -----------------------------
 export const canvas = document.getElementById('c');
 export const context = canvas.getContext('2d');
+
+// --- Canvas WebGL ---
+const cgl = document.getElementById('canvasGL');
+const gl = cgl.getContext('webgl');
+
+export const compileShader = (type, source) => {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+    }
+    return shader;
+};
+
+const vs = compileShader(gl.VERTEX_SHADER, vsSource);
+const fs = compileShader(gl.FRAGMENT_SHADER, fsSource);
+
+const program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+// Quad (-1,-1) a (1,1)
+const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+
+const buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+const posLoc = gl.getAttribLocation(program, 'a_position');
+gl.enableVertexAttribArray(posLoc);
+gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
 export const startTime = new Date();
-export let remainingTime
-export let isGameStarted
-export let lastStageReached
+export let remainingTime;
+export let isGameStarted;
+export let lastStageReached;
 export const BONUS_TIME = 0; // 5 seconds bonus time per stage
 
 export const spritesheet = new Image();
@@ -68,9 +110,9 @@ const init = () => {
     resize(render);
 
     initControls({
-         startGame,
+        startGame,
         toggleDebug,
-        isGameStarted
+        isGameStarted,
     });
 
     generateRoad();
@@ -139,15 +181,13 @@ const renderGameFrame = () => {
         (absoluteIndex - 2) * roadSegmentSize - player.position;
     let currentSegment = road[currentSegmentIndex];
 
-    
     if (currentSegment.curve === undefined) {
         console.warn('Undefined curve detected in segment');
         currentSegment.curve = 0; // Provide a default value to prevent rendering issues
     }
-    
+
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
-    
 
     let playerPosSegmentHeight = road[absoluteIndex % road.length].height;
     let playerPosNextSegmentHeight =
@@ -168,8 +208,6 @@ const renderGameFrame = () => {
             playerPosRelative;
 
     lastDelta = player.posx - baseOffset * 2;
-
-    
 
     if (isBackground) drawBackground(currentSegment.curve);
 
@@ -212,7 +250,7 @@ const renderGameFrame = () => {
         const currentPhase = stages[currentStagePos]
             ? stages[currentStagePos]
             : stages[0];
-            
+
         const lastPhase = stages[lastStagePos]
             ? stages[lastStagePos]
             : stages[0];
@@ -226,10 +264,10 @@ const renderGameFrame = () => {
         }
 
         // TODO: check why throw errors
-         drawString({
-             string: '' + 'comarca ' + currentStagePos,
-             pos: { x: 2, y: 10 },
-         });
+        drawString({
+            string: '' + 'comarca ' + currentStagePos,
+            pos: { x: 2, y: 10 },
+        });
 
         // drawString({
         //     string: '' + 'transition ' + t.toFixed(2),
@@ -249,8 +287,8 @@ const renderGameFrame = () => {
         );
 
         sceneryColor = colors.background;
-        //TODO: pasarle imagen de background a drawBackground       
-            isBackground = currentPhase.isBackground;
+        //TODO: pasarle imagen de background a drawBackground
+        isBackground = currentPhase.isBackground;
         // }
         // --------------------------
         // --   DRAW SEGMENTS    --
@@ -357,6 +395,18 @@ const renderGameFrame = () => {
             splashInterval = setInterval(splashScreen, 60);
         }, 2000);
     }
+    // --- Crear textura desde canvas2d ---
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    // Pasar canvas2d como textura
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+
+    // Dibujar
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
 ////////////////// SPLASH //////////////////
@@ -373,14 +423,14 @@ const startGame = () => {
         splashInterval = null;
         remainingTime = 100000; // Reset timer
         lastStageReached = 0; // Reset stage progress
-        resetPlayer(player)
+        resetPlayer(player);
         console.log(player);
         initEngineSound();
         initControls({
             startGame,
-           toggleDebug,
-           isGameStarted
-       });
+            toggleDebug,
+            isGameStarted,
+        });
     }
 };
 
