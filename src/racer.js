@@ -42,46 +42,53 @@ import { updateCarPhysics } from './physics/carPhysics.js';
 // ---  closure scoped vars  ---
 // -----------------------------
 export const canvas = document.getElementById('c');
-export const context = canvas.getContext('2d');
-export const startTime = new Date();
-export let remainingTime
-export let isGameStarted
-export let lastStageReached
-export const BONUS_TIME = 0; // 5 seconds bonus time per stage
+// Añadir estas importaciones al principio del archivo
+import { initWebGLRenderer, applyDithering } from './dithering/webglRenderer.js';
+import { mat4 } from './dithering/gl-matrix.js';
 
-export const spritesheet = new Image();
-spritesheet.src = 'spritesheet.test.png';
-export const keys = []; // teclas
+// Añadir estas variables
+let canvas2D;
+let context2D;
+let webglInitialized = false;
 
-let lastDelta = 0;
-let splashInterval;
-let gameInterval;
-let sceneryColor = getBackgroundColor();
-let isBackground = true;
-
-//initialize the game
+// Modificar la función init
 const init = () => {
-    // configure canvas
+    // Crear un canvas 2D para renderizar el juego
+    canvas2D = document.createElement('canvas');
+    canvas2D.width = render.width;
+    canvas2D.height = render.height;
+    context2D = canvas2D.getContext('2d');
+    
+    // Configurar canvas principal
     canvas.height = render.height;
     canvas.width = render.width;
-
+    
+    // Inicializar WebGL para el dithering
+    webglInitialized = initWebGLRenderer();
+    
     resize(render);
-
+    
     initControls({
-         startGame,
+        startGame,
         toggleDebug,
         isGameStarted
     });
-
+    
     generateRoad();
 };
 
-//renders one frame
-const renderGameFrame = () => {
-    // Clean screen
-    context.fillStyle = sceneryColor;
-    context.fillRect(0, 0, render.width, render.height);
+// Modificar la variable context para que use context2D
+export const context = canvas.getContext('2d');
 
+// Modificar la función renderGameFrame
+const renderGameFrame = () => {
+    // Si WebGL está inicializado, usar el canvas 2D para renderizar
+    const renderContext = webglInitialized ? context2D : context;
+    
+    // Clean screen
+    renderContext.fillStyle = sceneryColor;
+    renderContext.fillRect(0, 0, render.width, render.height);
+    
     // --------------------------
     // -- Update the car state --
     // --------------------------
@@ -394,3 +401,8 @@ const start = () => {
 };
 
 (() => start(spritesheet))();
+
+// Al final del renderizado, aplicar dithering si WebGL está inicializado
+if (webglInitialized) {
+    applyDithering(canvas2D);
+}

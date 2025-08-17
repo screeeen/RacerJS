@@ -1,6 +1,9 @@
-import { spritesheet, context } from '../racer.js';
+// Modificar la importación para usar el contexto correcto
+import { context, canvas2D, webglInitialized, spritesheet } from '../racer.js';
 
-export const drawSprite = (sprite) => {
+export const drawSprite = ({ x, y, s, i }) => {
+    // Usar el contexto correcto
+    const ctx = webglInitialized ? canvas2D.getContext('2d') : context;
     const destY = sprite.y - sprite.i.h * sprite.s;
     let h;
     if (sprite.ymax < sprite.y) {
