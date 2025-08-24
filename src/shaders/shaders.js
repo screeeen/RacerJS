@@ -9,16 +9,6 @@ export const vsSource = `
    }
  `;
 
-// // Fragment shader: invierte colores
-// export const fsSource = `
-//     precision mediump float;
-//     uniform sampler2D u_tex;
-//     varying vec2 v_uv;
-//     void main() {
-//       vec4 color = texture2D(u_tex, v_uv);
-//       gl_FragColor = vec4(1.0 - color.rgb, color.a);
-//     }
-//   `;
 export const fsSource = `
     precision mediump float;
     uniform sampler2D u_tex;
@@ -60,7 +50,7 @@ export const fsSource = `
         float dither = bayer4x4(pixel.x, pixel.y);
 
         // Aplicar dithering
-        vec3 dithered = floor((1.0 - color.rgb) * 16.0 + dither) / 16.0;
+        vec3 dithered = floor((color.rgb) * 2.0 + dither) / 2.0;
 
         gl_FragColor = vec4(dithered, color.a);
     }
