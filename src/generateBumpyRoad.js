@@ -1,5 +1,4 @@
-import { roadParam } from './generateRoad.js';
-// import { road } from '../racer.js';
+import { roadParam } from './stages';
 
 export const generateBumpyRoad = () => {
     const r = Math.random;

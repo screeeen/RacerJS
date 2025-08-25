@@ -4,25 +4,14 @@ import {
     roadSegmentSize,
     numberOfSegmentPerColor,
 } from './generateRoad.js';
-import {
-    // car,
-    // car_4,
-    // car_8,
-    render,
-    player,
-    resetPlayer,
-    // npc,
-    // npc_sprite_dumb_spriteSheet,
-} from './gameElements.js';
-import { roadParam } from './generateRoad.js';
-// import { generateBumpyRoad } from './src/generateBumpyRoad.js';
+import { render, player, resetPlayer } from './gameElements.js';
 import { resize } from './resize.js';
 import { drawString } from './draw/drawString.js';
 import { drawSegment } from './draw/drawSegment.js';
 import { drawSprite } from './draw/drawSprite.js';
 import { drawBackground } from './draw/drawBackground.js';
 import { renderSplashFrame } from './renderSplashFrame.js';
-import { getStages } from './stages.js';
+import { getStages, getZoneSections, roadParam } from './stages.js';
 import { getBackgroundColor } from './getBackgroundColor.js';
 import { interpolateObjects } from './utils.js';
 import { drawDebugInfo, toggleDebug } from './debug.js';
@@ -35,13 +24,7 @@ import // initBackgroundMusic,
 // updateBackgroundMusic,
 // stopBackgroundMusic,
 './audio/backgroundMusic.js';
-import {
-    initControls,
-    isAccelerating,
-    isBraking,
-    isTurningLeft,
-    isTurningRight,
-} from './controllers/gameControls.js';
+import { initControls } from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
 
@@ -146,9 +129,21 @@ const renderGameFrame = () => {
     // --   Render the road    --
     // --------------------------
     let absoluteIndex = Math.floor(player.position / roadSegmentSize);
+    let currentSegmentIndex = (absoluteIndex - 2) % road.length;
+    let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
+
+    const stages = getStages(counter < numberOfSegmentPerColor);
+    console.log('stages', stages);
+    const zoneSections = getZoneSections(stages);
 
     const currentStagePos =
         Math.floor(absoluteIndex / roadParam.zoneSection) + 1;
+    // absoluteIndex - stages[endIndex];
+
+    const zoneSection = zoneSections.findIndex(
+        (stageEndIndex) => absoluteIndex < stageEndIndex
+    );
+    console.log('zoneSection', zoneSection);
 
     // Check if we've reached a new stage
     if (currentStagePos > lastStageReached) {
@@ -180,7 +175,6 @@ const renderGameFrame = () => {
         // Keep the game running - removed clearInterval and sound stops
     }
 
-    let currentSegmentIndex = (absoluteIndex - 2) % road.length;
     let currentSegmentPosition =
         (absoluteIndex - 2) * roadSegmentSize - player.position;
     let currentSegment = road[currentSegmentIndex];
@@ -191,7 +185,6 @@ const renderGameFrame = () => {
     }
 
     let lastProjectedHeight = Number.POSITIVE_INFINITY;
-    let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
 
     let playerPosSegmentHeight = road[absoluteIndex % road.length].height;
     let playerPosNextSegmentHeight =
@@ -249,6 +242,7 @@ const renderGameFrame = () => {
         // --------------------------
 
         const stages = getStages(counter < numberOfSegmentPerColor);
+
         let lastStagePos = currentStagePos - 1;
 
         const currentPhase = stages[currentStagePos]
@@ -399,7 +393,7 @@ const renderGameFrame = () => {
             splashInterval = setInterval(splashScreen, 60);
         }, 2000);
     }
-    // --- Crear textura desde canvas2d ---
+    // --- WEBGL filter ---
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -429,7 +423,6 @@ const startGame = () => {
         remainingTime = 100000; // Reset timer
         lastStageReached = 0; // Reset stage progress
         resetPlayer(player);
-        console.log(player);
         initEngineSound();
         initControls({
             startGame,

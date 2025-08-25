@@ -1,22 +1,19 @@
 import {
-    house, rock, bridge, tree, house_flat, bush, tower, ruins_arc, palm
+    house,
+    rock,
+    bridge,
+    tree,
+    house_flat,
+    bush,
+    tower,
+    ruins_arc,
+    palm,
 } from './gameElements.js';
+import { roadParam } from './stages.js';
 import { r } from './utils.js';
 export const road = [];
 export const roadSegmentSize = 5; // ??? roadparam.length
 export const numberOfSegmentPerColor = 4;
-
-// TODO: hacer las zonesectino variables en un array
-
-export const roadParam = {
-    curvy: 2.0, // Significantly increased curve frequency
-    mountainy: 8.5, // Maintained elevation changes
-    maxHeight: 20000, // Maintained height changes
-    maxCurve: 800, // Increased curve intensity
-    // los intervalos de transicion se determinan: ejemplo:  startIndex: 5000,endIndex: 6000,
-    zoneSection: 2000, // Shorter sections for even more frequent changes
-    length: 15, // Maintained track length
-};
 
 // -------------------------------------
 // ---  Generates the road randomly  ---
@@ -55,8 +52,6 @@ export const generateRoad = () => {
     let zones = roadParam.length;
 
     // Store initial values to match at the end
-    const initialHeight = 0;
-    const initialCurve = 0;
 
     while (zones--) {
         let finalHeight;

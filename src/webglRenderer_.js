@@ -9,34 +9,34 @@ let quadBuffer;
 let textureCoordBuffer;
 let indexBuffer;
 
-// Shader para renderizar una textura con inversión de colores
-const vsSource = `
-  attribute vec4 aVertexPosition;
-  attribute vec2 aTextureCoord;
-  
-  varying highp vec2 vTextureCoord;
-  
-  void main(void) {
-    gl_Position = aVertexPosition;
-    vTextureCoord = aTextureCoord;
-  }
-`;
+// // Shader para renderizar una textura con inversión de colores
+// const vsSource = `
+//   attribute vec4 aVertexPosition;
+//   attribute vec2 aTextureCoord;
 
-// Shader de fragmento con inversión de colores
-const fsSource = `
-  precision mediump float;
-  varying highp vec2 vTextureCoord;
-  uniform sampler2D uSampler;
-  
-  void main(void) {
-    vec4 color = texture2D(uSampler, vTextureCoord);
-    
-    // Invertir los colores
-    vec3 invertedColor = vec3(1.0 - color.r, 1.0 - color.g, 1.0 - color.b);
-    
-    gl_FragColor = vec4(invertedColor, color.a);
-  }
-`;
+//   varying highp vec2 vTextureCoord;
+
+//   void main(void) {
+//     gl_Position = aVertexPosition;
+//     vTextureCoord = aTextureCoord;
+//   }
+// `;
+
+// // Shader de fragmento con inversión de colores
+// const fsSource = `
+//   precision mediump float;
+//   varying highp vec2 vTextureCoord;
+//   uniform sampler2D uSampler;
+
+//   void main(void) {
+//     vec4 color = texture2D(uSampler, vTextureCoord);
+
+//     // Invertir los colores
+//     vec3 invertedColor = vec3(1.0 - color.r, 1.0 - color.g, 1.0 - color.b);
+
+//     gl_FragColor = vec4(invertedColor, color.a);
+//   }
+// `;
 
 // Inicializa WebGL y crea los recursos necesarios
 export function initWebGL(canvas) {
