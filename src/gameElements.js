@@ -10,18 +10,6 @@ export const render = {
     camera_height: 100,
 };
 
-export const npc = {
-    position: 12,
-    speed: 0,
-    acceleration: 0.05,
-    deceleration: 0.2,
-    breaking: 0.6,
-    turning: 6.0,
-    posx: 0,
-    maxSpeed: 40,
-    spriteSrc: 'sprite_npc.png',
-};
-
 export const player = {
     position: 10,
     speed: 0,
@@ -108,15 +96,5 @@ export const logo = {
     w: 115,
     h: 20,
 };
-
-export const npc_sprite_dumb_spriteSheet = {
-    x: 0,
-    y: 0,
-    w: 160,
-    h: 60,
-};
-
-export const imgCarNpc = new Image();
-imgCarNpc.src = 'sprite_npc.png';
 
 export const backgroundColor = getBackgroundColor();

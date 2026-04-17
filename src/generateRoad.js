@@ -1,11 +1,4 @@
-import {
-    house,
-    rock,
-    palm,
-    bridge,
-    tree,
-    npc_sprite_dumb_spriteSheet,
-} from './gameElements.js';
+import { house, rock, palm, bridge, tree } from './gameElements.js';
 import { r } from './utils.js';
 export const road = [];
 export const roadSegmentSize = 5; // ??? roadparam.length
@@ -46,7 +39,7 @@ export const generateRoad = () => {
     let currentHeight = 0;
     let currentCurve = 0;
 
-    console.log('%c Racer! ', 'background: #222; color: #bada55');
+    console.log('%c Racer! ', 'background: #004; color: #bada55');
     console.log('%c ---------------- ', 'background: #222; color: #bada55');
     console.log('longitud de pista: roadparam.lenght', roadParam.length);
     console.log('logitud de cada fase: zoneSection', roadParam.zoneSection);
@@ -126,19 +119,6 @@ export const generateRoad = () => {
                 sprite = false;
             }
 
-            // --------------------------
-            // -- NPCS!   --
-            // --------------------------
-
-            let npcSpriteDumb = false;
-            if (CASAS && i === 30) {
-                npcSpriteDumb = {
-                    src: 'sprite_npc.png',
-                    type: npc_sprite_dumb_spriteSheet,
-                    pos: 0,
-                };
-            }
-
             road.push({
                 height:
                     currentHeight +
@@ -157,7 +137,6 @@ export const generateRoad = () => {
                                     Math.PI / 2
                             )),
                 sprite,
-                npcSpriteDumb,
                 stage: currentStage, // solo para debug
             });
         }
