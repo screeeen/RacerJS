@@ -4,12 +4,20 @@ import {
     roadSegmentSize,
     numberOfSegmentPerColor,
 } from './generateRoad.js';
-import { render, player, resetPlayer } from './gameElements.js';
+import {
+    render,
+    player,
+    resetPlayer,
+    car,
+    car_4,
+    car_8,
+} from './gameElements.js';
 import { roadParam } from './generateRoad.js';
 import { resize } from './resize.js';
 import { drawString } from './draw/drawString.js';
 import { drawSegment } from './draw/drawSegment.js';
 import { drawSprite } from './draw/drawSprite.js';
+import { drawImage } from './draw/drawImage.js';
 import { drawBackground } from './draw/drawBackground.js';
 import { renderSplashFrame } from './renderSplashFrame.js';
 import { getStages } from './stages.js';
@@ -21,8 +29,13 @@ import {
     updateEngineSound,
     stopEngineSound,
 } from './audio/engineSound.js';
-import { initControls } from './controllers/gameControls.js';
+import {
+    initControls,
+    isTurningLeft,
+    isTurningRight,
+} from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
+import { npcs, initNpcs, updateNpcs } from './npc.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
 
 // -----------------------------
@@ -76,7 +89,6 @@ export let lastStageReached;
 export const BONUS_TIME = 0; // 5 seconds bonus time per stage
 
 export const spritesheet = new Image();
-spritesheet.src = 'spritesheet.test.png';
 
 let lastDelta = 0;
 let splashInterval;
@@ -99,6 +111,7 @@ const init = () => {
     });
 
     generateRoad();
+    initNpcs();
 };
 
 //renders one frame
@@ -111,6 +124,7 @@ const renderGameFrame = () => {
     // -- Update the car state --
     // --------------------------
     updateCarPhysics({ lastDelta });
+    updateNpcs(road);
 
     // Update engine sound
     updateEngineSound({
@@ -192,6 +206,7 @@ const renderGameFrame = () => {
     if (isBackground) drawBackground(currentSegment.curve);
 
     let iter = render.depthOfField;
+    let absoluteScanIndex = absoluteIndex - 2;
 
     while (iter--) {
         // Next Segment:
@@ -294,12 +309,35 @@ const renderGameFrame = () => {
             });
         }
 
+        // --------------------------
+        // --   DRAW NPCs --
+        // --------------------------
+        for (const npc of npcs) {
+            if (
+                Math.floor(npc.position / roadSegmentSize) === absoluteScanIndex
+            ) {
+                spriteBuffer.push({
+                    y: render.height / 2 + startProjectedHeight,
+                    x:
+                        render.width / 2 -
+                        npc.laneOffset * render.width * currentScaling +
+                        currentSegment.curve -
+                        baseOffset -
+                        (player.posx - baseOffset * 2) * currentScaling,
+                    ymax: render.height / 2 + lastProjectedHeight,
+                    s: 2.5 * currentScaling,
+                    i: car,
+                });
+            }
+        }
+
         // LOOP
 
         lastProjectedHeight = currentHeight;
         currentSegmentIndex = nextSegmentIndex;
         currentSegment = nextSegment;
         currentSegmentPosition += roadSegmentSize;
+        absoluteScanIndex++;
 
         counter = (counter + 1) % (2 * numberOfSegmentPerColor);
     }
@@ -309,6 +347,19 @@ const renderGameFrame = () => {
     while ((sprite = spriteBuffer.pop())) {
         drawSprite(sprite);
     }
+
+    // --------------------------
+    // --     Draw the car     --
+    // --------------------------
+    let carSprite;
+    if (isTurningLeft()) {
+        carSprite = { a: car_4, x: 117, y: 190 };
+    } else if (isTurningRight()) {
+        carSprite = { a: car_8, x: 125, y: 190 };
+    } else {
+        carSprite = { a: car, x: 125, y: 190 };
+    }
+    drawImage(carSprite.a, carSprite.x, carSprite.y, 1);
 
     // --------------------------
     // --     Draw the hud     --
@@ -391,13 +442,8 @@ const startGame = () => {
         remainingTime = 100000; // Reset timer
         lastStageReached = 0; // Reset stage progress
         resetPlayer(player);
-        console.log(player);
+        initNpcs();
         initEngineSound();
-        initControls({
-            startGame,
-            toggleDebug,
-            isGameStarted,
-        });
     }
 };
 
