@@ -4,18 +4,8 @@ import {
     roadSegmentSize,
     numberOfSegmentPerColor,
 } from './generateRoad.js';
-import {
-    // car,
-    // car_4,
-    // car_8,
-    render,
-    player,
-    resetPlayer,
-    // npc,
-    // npc_sprite_dumb_spriteSheet,
-} from './gameElements.js';
+import { render, player, resetPlayer } from './gameElements.js';
 import { roadParam } from './generateRoad.js';
-// import { generateBumpyRoad } from './src/generateBumpyRoad.js';
 import { resize } from './resize.js';
 import { drawString } from './draw/drawString.js';
 import { drawSegment } from './draw/drawSegment.js';
@@ -31,17 +21,7 @@ import {
     updateEngineSound,
     stopEngineSound,
 } from './audio/engineSound.js';
-import // initBackgroundMusic,
-// updateBackgroundMusic,
-// stopBackgroundMusic,
-'./audio/backgroundMusic.js';
-import {
-    initControls,
-    isAccelerating,
-    isBraking,
-    isTurningLeft,
-    isTurningRight,
-} from './controllers/gameControls.js';
+import { initControls } from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
 
@@ -97,7 +77,6 @@ export const BONUS_TIME = 0; // 5 seconds bonus time per stage
 
 export const spritesheet = new Image();
 spritesheet.src = 'spritesheet.test.png';
-export const keys = []; // teclas
 
 let lastDelta = 0;
 let splashInterval;
@@ -175,9 +154,6 @@ const renderGameFrame = () => {
             pos: { x: 100, y: 20 },
             time: 960000,
         });
-        // Reset player position to start a new lap
-        // player.position = 0;
-        // Keep the game running - removed clearInterval and sound stops
     }
 
     let currentSegmentIndex = (absoluteIndex - 2) % road.length;
@@ -267,22 +243,10 @@ const renderGameFrame = () => {
             t = (absoluteIndex - startIndex) / (endIndex - startIndex);
         }
 
-        // TODO: check why throw errors
         drawString({
             string: '' + 'comarca ' + currentStagePos,
             pos: { x: 2, y: 10 },
         });
-
-        // drawString({
-        //     string: '' + 'transition ' + t.toFixed(2),
-        //     pos: { x: 2, y: 20 },
-        // });
-
-        // const currentStage = {
-        //     currentPhase,
-        //     lastPhase,
-        //     t,
-        // };
 
         const colors = interpolateObjects(
             lastPhase.colors,
@@ -293,7 +257,6 @@ const renderGameFrame = () => {
         sceneryColor = colors.background;
         //TODO: pasarle imagen de background a drawBackground
         isBackground = currentPhase.isBackground;
-        // }
         // --------------------------
         // --   DRAW SEGMENTS    --
         // --------------------------
@@ -384,7 +347,7 @@ const renderGameFrame = () => {
     drawString({ string: 'Time: ' + remainingSec, pos: { x: 120, y: 10 } });
 
     // Draw debug information
-    drawDebugInfo({ player, road, roadParam, absoluteIndex });
+    drawDebugInfo({ player, road, absoluteIndex });
 
     // Game over when time runs out
     if (remainingTime <= 0) {
@@ -392,7 +355,6 @@ const renderGameFrame = () => {
         drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
         stopEngineSound();
         isGameStarted = false;
-        // stopBackgroundMusic();
 
         // Wait 2 seconds before restarting
         setTimeout(() => {

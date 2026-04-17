@@ -1,12 +1,10 @@
 import { drawString } from './draw/drawString.js';
 import { render } from './gameElements.js';
-import { roadSegmentSize } from './generateRoad.js';
 
 export const DEBUG = {
     enabled: true,
     showFPS: true,
     showPlayerInfo: true,
-    showStageInfo: true,
     showRoadInfo: true,
 };
 
@@ -19,12 +17,11 @@ export const toggleDebug = () => {
     // Toggle all debug information flags
     DEBUG.showFPS = DEBUG.enabled;
     DEBUG.showPlayerInfo = DEBUG.enabled;
-    DEBUG.showStageInfo = DEBUG.enabled;
     DEBUG.showRoadInfo = DEBUG.enabled;
 };
 
 // Debug information display
-export const drawDebugInfo = ({ player, road, roadParam, absoluteIndex }) => {
+export const drawDebugInfo = ({ player, road, absoluteIndex }) => {
     if (!DEBUG.enabled) return;
 
     let y = 30;
@@ -53,24 +50,12 @@ export const drawDebugInfo = ({ player, road, roadParam, absoluteIndex }) => {
                 () => `Pos Z: ${player.position.toFixed(2)}`,
             ],
         },
-        // {
-        //     condition: DEBUG.showStageInfo,
-        //     items: [
-        //         () => {
-        //             const currentStage = Math.floor(
-        //                 player.position / roadParam.zoneSection
-        //             );
-        //             return `Stage: ${currentStage}`;
-        //         },
-        //     ],
-        // },
         {
             condition: DEBUG.showRoadInfo,
             items: [
                 () => {
                     const segment = road[Math.floor(player.position)];
                     if (!segment) return null;
-                    player.position / roadSegmentSize;
                     return [
                         `AbsoluteIndex: ${absoluteIndex}`,
                         `Curve: ${Math.round(segment.curve)}`,

@@ -152,19 +152,6 @@ export const generateRoad = () => {
                 sprite = false;
             }
 
-            // --------------------------
-            // -- NPCS!   --
-            // --------------------------
-
-            // let npcSpriteDumb = false;
-            // if (CASAS && i === 30) {
-            //     npcSpriteDumb = {
-            //         src: 'sprite_npc.png',
-            //         type: npc_sprite_dumb_spriteSheet,
-            //         pos: 0,
-            //     };
-            // }
-
             road.push({
                 height:
                     currentHeight +
@@ -183,7 +170,6 @@ export const generateRoad = () => {
                                     Math.PI / 2
                             )),
                 sprite,
-                // npcSpriteDumb,
                 stage: currentStage, // solo para debug
             });
         }
