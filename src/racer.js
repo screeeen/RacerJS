@@ -97,6 +97,14 @@ let gameInterval;
 let sceneryColor = getBackgroundColor();
 let isBackground = true;
 
+// Textura GL reutilizable (antes se creaba 60 veces/seg → leak GPU)
+const sharedTexture = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, sharedTexture);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
 //initialize the game
 const init = () => {
     // configure canvas
@@ -209,8 +217,13 @@ const renderGameFrame = () => {
     // ---- Camera FX ----
     const speedRatio = player.speed / player.maxSpeed;
 
-    // FOV dinámico: cámara se acerca con velocidad
-    const targetCamDist = render.base_camera_distance - speedRatio * 6;
+    // FOV dinámico: cámara se acerca con velocidad. Clamp >= 17 para que
+    // (camera_distance + currentSegmentPosition) > 1 (segPos ∈ (-15,-10]).
+    // Sin clamp, scaling = 30/~0 → -60 → carretera y sprites explotan.
+    const targetCamDist = Math.max(
+        render.base_camera_distance - speedRatio * 6,
+        17
+    );
     render.camera_distance += (targetCamDist - render.camera_distance) * 0.1;
 
     // Nose-dive al frenar
@@ -478,18 +491,10 @@ const renderGameFrame = () => {
             splashInterval = setInterval(splashScreen, 60);
         }, 2000);
     }
-    // --- Crear textura desde canvas2d ---
-    const texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-    // Pasar canvas2d como textura
+    // Subir canvas2d como textura (reutiliza sharedTexture, no leak)
+    gl.bindTexture(gl.TEXTURE_2D, sharedTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
 
-    // Dibujar
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
 
