@@ -1,9 +1,13 @@
 import { player } from '../gameElements.js';
+import { road, roadSegmentSize } from '../generateRoad.js';
 import { isAccelerating, isBraking, isTurningLeft, isTurningRight } from '../controllers/gameControls.js';
 
 export const updateCarPhysics = ({ lastDelta }) => {
-    // Handle speed based on collision detection
-    if (Math.abs(lastDelta) > 130) { //limite carretera
+    const speedRatio = player.speed / player.maxSpeed;
+    const offRoad = Math.abs(lastDelta) > 130;
+
+    // ---- Longitudinal ----
+    if (offRoad) {
         if (isAccelerating()) {
             if (player.speed > 3) player.speed -= 0.2;
             if (player.speed < 3) player.speed += 0.01;
@@ -11,33 +15,54 @@ export const updateCarPhysics = ({ lastDelta }) => {
             player.speed -= player.deceleration;
         }
     } else {
-        // Handle acceleration controls
         if (isAccelerating()) {
-            player.speed += player.acceleration;
+            // Curva asintótica: punch inicial, easing al tope
+            const accel = 0.05 * (1 - speedRatio) + 0.008;
+            player.speed += accel;
         } else if (isBraking()) {
-            player.speed -= player.breaking;
+            // Frenado proporcional a velocidad
+            const brake = 0.35 + player.speed * 0.05;
+            player.speed -= brake;
         } else {
             player.speed -= player.deceleration;
         }
     }
 
-    // Handle turning
-    if (isTurningLeft()) {
-        if (player.speed > 0) {
-            player.posx -= player.turning;
-        }
-    } else if (isTurningRight()) {
-        if (player.speed > 0) {
-            player.posx += player.turning;
-        }
+    // ---- Lateral (drift / inercia) ----
+    const speedFactor = 0.25 + 0.75 * speedRatio;
+
+    if (player.speed > 0) {
+        if (isTurningLeft())  player.vx -= player.lateralInput * speedFactor;
+        if (isTurningRight()) player.vx += player.lateralInput * speedFactor;
     }
 
-    // Apply speed constraints
-    player.speed = Math.max(player.speed, 0); // Cannot go in reverse
-    player.speed = Math.min(player.speed, player.maxSpeed); // Maximum speed
-    
-    // Update position
+    // Fuerza centrífuga: empuja hacia afuera en curvas a alta velocidad
+    const segIndex = Math.floor(player.position / roadSegmentSize) % road.length;
+    const curve = road[segIndex] ? road[segIndex].curve || 0 : 0;
+    player.vx += curve * player.speed * player.centripetal;
+
+    // Aplicar velocidad lateral
+    player.posx += player.vx;
+
+    // Decay grip lateral (más grip a baja velocidad, menos arriba)
+    const grip = player.gripLat - speedRatio * 0.05;
+    player.vx *= grip;
+
+    // Auto-recenter suave cuando no hay input
+    if (!isTurningLeft() && !isTurningRight() && !offRoad) {
+        player.posx -= lastDelta * player.recenter;
+    }
+
+    // Off-road rumble
+    if (offRoad && player.speed > 1) {
+        player.posx += (Math.random() - 0.5) * 2.5;
+    }
+
+    // Constraints
+    player.speed = Math.max(player.speed, 0);
+    player.speed = Math.min(player.speed, player.maxSpeed);
+
     player.position += player.speed;
 
-    return player
+    return player;
 };

@@ -33,6 +33,7 @@ import {
     initControls,
     isTurningLeft,
     isTurningRight,
+    isBraking,
 } from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
 import { npcs, initNpcs, updateNpcs } from './npc.js';
@@ -124,7 +125,7 @@ const renderGameFrame = () => {
     // -- Update the car state --
     // --------------------------
     updateCarPhysics({ lastDelta });
-    updateNpcs(road);
+    updateNpcs(road, lastDelta);
 
     // Update engine sound
     updateEngineSound({
@@ -202,6 +203,25 @@ const renderGameFrame = () => {
             playerPosRelative;
 
     lastDelta = player.posx - baseOffset * 2;
+
+    // ---- Camera FX ----
+    const speedRatio = player.speed / player.maxSpeed;
+
+    // FOV dinámico: cámara se acerca con velocidad
+    const targetCamDist = render.base_camera_distance - speedRatio * 6;
+    render.camera_distance += (targetCamDist - render.camera_distance) * 0.1;
+
+    // Nose-dive al frenar
+    const targetCamHeight = isBraking() && player.speed > 4
+        ? render.base_camera_height - 6
+        : render.base_camera_height;
+    render.camera_height += (targetCamHeight - render.camera_height) * 0.15;
+
+    // Screen shake en velocidad alta
+    const shakeAmt = Math.max(0, speedRatio - 0.85) * 80;
+    if (shakeAmt > 0) {
+        lastDelta += (Math.random() - 0.5) * shakeAmt;
+    }
 
     if (isBackground) drawBackground(currentSegment.curve);
 
@@ -352,9 +372,10 @@ const renderGameFrame = () => {
     // --     Draw the car     --
     // --------------------------
     let carSprite;
-    if (isTurningLeft()) {
+    const driftThresh = 0.6;
+    if (player.vx < -driftThresh || (isTurningLeft() && player.speed > 0.5)) {
         carSprite = { a: car_4, x: 117, y: 190 };
-    } else if (isTurningRight()) {
+    } else if (player.vx > driftThresh || (isTurningRight() && player.speed > 0.5)) {
         carSprite = { a: car_8, x: 125, y: 190 };
     } else {
         carSprite = { a: car, x: 125, y: 190 };

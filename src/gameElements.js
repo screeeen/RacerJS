@@ -8,6 +8,8 @@ export const render = {
     depthOfField: 150,
     camera_distance: 20,
     camera_height: 80,
+    base_camera_distance: 20,
+    base_camera_height: 80,
 };
 
 export const player = {
@@ -18,7 +20,12 @@ export const player = {
     breaking: 0.6,
     turning: 6.0,
     posx: 0.5,
-    maxSpeed: 40,
+    maxSpeed: 20,
+    vx: 0,
+    gripLat: 0.88,
+    centripetal: 0.0009,
+    lateralInput: 0.32,
+    recenter: 0.04,
 };
 
 // this is somehow stupid
@@ -30,7 +37,12 @@ export const resetPlayer = (player) => {
     player.breaking= 0.6;
     player.turning= 6.0;
     player.posx= 0.5;
-    player.maxSpeed= 40;
+    player.maxSpeed= 20;
+    player.vx = 0;
+    player.gripLat = 0.88;
+    player.centripetal = 0.0009;
+    player.lateralInput = 0.32;
+    player.recenter = 0.04;
 }
 
 //sprites
