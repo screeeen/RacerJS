@@ -23,7 +23,7 @@ export const player = {
     maxSpeed: 20,
     vx: 0,
     gripLat: 0.88,
-    centripetal: 0.0009,
+    centripetal: 0.5,
     lateralInput: 0.32,
     recenter: 0.04,
 };
@@ -40,7 +40,7 @@ export const resetPlayer = (player) => {
     player.maxSpeed= 20;
     player.vx = 0;
     player.gripLat = 0.88;
-    player.centripetal = 0.0009;
+    player.centripetal = 0.5;
     player.lateralInput = 0.32;
     player.recenter = 0.04;
 }

@@ -1,5 +1,5 @@
 import { player } from '../gameElements.js';
-import { road, roadSegmentSize } from '../generateRoad.js';
+import { road, roadSegmentSize, roadParam } from '../generateRoad.js';
 import { isAccelerating, isBraking, isTurningLeft, isTurningRight } from '../controllers/gameControls.js';
 
 export const updateCarPhysics = ({ lastDelta }) => {
@@ -39,7 +39,8 @@ export const updateCarPhysics = ({ lastDelta }) => {
     // Fuerza centrífuga: empuja hacia afuera en curvas a alta velocidad
     const segIndex = Math.floor(player.position / roadSegmentSize) % road.length;
     const curve = road[segIndex] ? road[segIndex].curve || 0 : 0;
-    player.vx += curve * player.speed * player.centripetal;
+    const curveNorm = curve / roadParam.maxCurve;
+    player.vx -= curveNorm * speedRatio * player.centripetal;
 
     // Aplicar velocidad lateral
     player.posx += player.vx;
