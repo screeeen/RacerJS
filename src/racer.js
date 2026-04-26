@@ -36,7 +36,7 @@ import {
     isBraking,
 } from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
-import { npcs, initNpcs, updateNpcs } from './npc.js';
+import { npcs, initNpcs, updateNpcs, CAR_HALF_WIDTH_LASTDELTA, CAR_HALF_LENGTH_POS } from './npc.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
 
 // -----------------------------
@@ -125,7 +125,6 @@ const renderGameFrame = () => {
     // -- Update the car state --
     // --------------------------
     updateCarPhysics({ lastDelta });
-    updateNpcs(road, lastDelta);
 
     // Update engine sound
     updateEngineSound({
@@ -204,6 +203,9 @@ const renderGameFrame = () => {
 
     lastDelta = player.posx - baseOffset * 2;
 
+    // NPC update + collision con lastDelta fresco
+    updateNpcs(road, lastDelta);
+
     // ---- Camera FX ----
     const speedRatio = player.speed / player.maxSpeed;
 
@@ -217,11 +219,13 @@ const renderGameFrame = () => {
         : render.base_camera_height;
     render.camera_height += (targetCamHeight - render.camera_height) * 0.15;
 
-    // Screen shake en velocidad alta
-    const shakeAmt = Math.max(0, speedRatio - 0.85) * 80;
-    if (shakeAmt > 0) {
-        lastDelta += (Math.random() - 0.5) * shakeAmt;
-    }
+    // Screen shake en velocidad alta (solo render, no toca física)
+    const shakeAmt = Math.max(0, speedRatio - 0.85) * 8;
+    const shakeX = shakeAmt > 0 ? (Math.random() - 0.5) * shakeAmt : 0;
+    const shakeY = shakeAmt > 0 ? (Math.random() - 0.5) * shakeAmt : 0;
+
+    context.save();
+    context.translate(shakeX, shakeY);
 
     if (isBackground) drawBackground(currentSegment.curve);
 
@@ -351,11 +355,13 @@ const renderGameFrame = () => {
                     i: car,
                 });
                 if (DEBUG.enabled) {
-                    const lateralThreshold = 45;
-                    const boxW = 2 * lateralThreshold * currentScaling;
+                    // box = own car half-width (en lastDelta proyectado)
+                    const boxW = 2 * CAR_HALF_WIDTH_LASTDELTA * currentScaling;
                     const boxH = car.h * 2.5 * currentScaling;
                     const dz = npc.position - player.position;
-                    const active = Math.abs(dz) < 6;
+                    const relSpeed = Math.abs(player.speed - npc.speed);
+                    const longThreshold = Math.max(2 * CAR_HALF_LENGTH_POS, relSpeed * 1.5);
+                    const active = Math.abs(dz) < longThreshold;
                     spriteBuffer.push({
                         debug: true,
                         x: npcScreenX - boxW / 2,
@@ -391,6 +397,8 @@ const renderGameFrame = () => {
         }
     }
 
+    context.restore();
+
     // --------------------------
     // --     Draw the car     --
     // --------------------------
@@ -407,13 +415,14 @@ const renderGameFrame = () => {
 
     if (DEBUG.enabled) {
         const centerX = carSprite.x + carSprite.a.w / 2;
-        const lateralThreshold = 45;
+        const playerScaling = 30 / render.camera_distance;
+        const halfW = CAR_HALF_WIDTH_LASTDELTA * playerScaling;
         context.strokeStyle = '#0ff';
         context.lineWidth = 1;
         context.strokeRect(
-            centerX - lateralThreshold,
+            centerX - halfW,
             carSprite.y,
-            lateralThreshold * 2,
+            halfW * 2,
             carSprite.a.h
         );
     }

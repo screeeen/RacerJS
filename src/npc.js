@@ -5,11 +5,22 @@ export const npcs = [];
 
 const LANES = [-0.25, 0, 0.25];
 
-const COLLISION_LONGITUDINAL_THRESHOLD = 6;
-const COLLISION_LATERAL_THRESHOLD = 45;
+// Geometría coords: render multiplica laneOffset*width=320 para offset visual.
+// lane+ aparece a la IZQUIERDA en mundo (render.js: -laneOffset*width*scaling).
+// Convertir laneOffset a equivalente lastDelta: cambiar signo y escalar por 320.
+export const LANE_TO_LASTDELTA = 320;
+
+// Half-widths en lastDelta units (sprite 69px / road 320px ≈ 0.215 lanes)
+export const CAR_HALF_WIDTH_LASTDELTA = 34; // ≈ 0.106 lanes
+// Half-lengths en player.position units (sprite 38px / scaling ~2 ≈ 19 world)
+export const CAR_HALF_LENGTH_POS = 10;
+
+// Suma de half-widths/lengths de player + NPC = threshold colisión
+const COLLISION_LATERAL_THRESHOLD = 2 * CAR_HALF_WIDTH_LASTDELTA; // 68
+const COLLISION_LONG_BASE = 2 * CAR_HALF_LENGTH_POS; // 20
 const COLLISION_PLAYER_SPEED_FACTOR = 0.4;
 const COLLISION_NPC_SPEED_FACTOR = 0.6;
-const COLLISION_PUSH = 10;
+const COLLISION_PUSH_LASTDELTA = 50;
 
 const CURVE_SLOWDOWN_FACTOR = 0.01;
 const CURVE_SLOWDOWN_MAX = 5;
@@ -35,21 +46,36 @@ export const initNpcs = () => {
     for (const n of npcs) {
         n.targetLaneOffset = n.laneOffset;
         n.laneTimer = LANE_TIMER_MIN + Math.floor(Math.random() * LANE_TIMER_RANGE);
+        n.colliding = false;
     }
 };
 
 export const updateNpcs = (road, playerLateralX) => {
     for (const npc of npcs) {
         const dz = npc.position - player.position;
-        if (Math.abs(dz) < COLLISION_LONGITUDINAL_THRESHOLD) {
-            const npcWorldX = npc.laneOffset * render.width;
-            const dx = npcWorldX - playerLateralX;
-            if (Math.abs(dx) < COLLISION_LATERAL_THRESHOLD) {
-                player.speed *= COLLISION_PLAYER_SPEED_FACTOR;
-                npc.speed *= COLLISION_NPC_SPEED_FACTOR;
-                player.posx += dx < 0 ? COLLISION_PUSH : -COLLISION_PUSH;
-            }
+        const relSpeed = Math.abs(player.speed - npc.speed);
+        // anti-tunneling: ventana longitudinal escala con velocidad relativa
+        const longThreshold = Math.max(COLLISION_LONG_BASE, relSpeed * 1.5);
+
+        // signo invertido: lane+ corresponde a -lastDelta en world frame
+        const npcLateral = -npc.laneOffset * LANE_TO_LASTDELTA;
+        const dx = npcLateral - playerLateralX;
+        const inWindow =
+            Math.abs(dz) < longThreshold &&
+            Math.abs(dx) < COLLISION_LATERAL_THRESHOLD;
+
+        // edge-trigger: solo dispara al entrar a la zona, no cada frame
+        if (inWindow && !npc.colliding) {
+            player.speed *= COLLISION_PLAYER_SPEED_FACTOR;
+            npc.speed *= COLLISION_NPC_SPEED_FACTOR;
+            // push lateral player + push longitudinal según rear/front-end
+            const lateralDir = dx > 0 ? -1 : 1;
+            player.posx += lateralDir * COLLISION_PUSH_LASTDELTA;
+            // separación longitudinal: si NPC delante (dz>0), retroceder
+            const longDir = dz > 0 ? -1 : 1;
+            player.position += longDir * COLLISION_LONG_BASE;
         }
+        npc.colliding = inWindow;
 
         const segIdx =
             Math.floor(npc.position / roadSegmentSize) % road.length;
