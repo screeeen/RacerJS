@@ -23,7 +23,7 @@ import { renderSplashFrame } from './renderSplashFrame.js';
 import { getStages } from './stages.js';
 import { getBackgroundColor } from './getBackgroundColor.js';
 import { interpolateObjects } from './utils.js';
-import { drawDebugInfo, toggleDebug } from './debug.js';
+import { drawDebugInfo, toggleDebug, DEBUG } from './debug.js';
 import {
     initEngineSound,
     updateEngineSound,
@@ -336,18 +336,35 @@ const renderGameFrame = () => {
             if (
                 Math.floor(npc.position / roadSegmentSize) === absoluteScanIndex
             ) {
+                const npcScreenX =
+                    render.width / 2 -
+                    npc.laneOffset * render.width * currentScaling +
+                    currentSegment.curve -
+                    baseOffset -
+                    (player.posx - baseOffset * 2) * currentScaling;
+                const npcScreenY = render.height / 2 + startProjectedHeight;
                 spriteBuffer.push({
-                    y: render.height / 2 + startProjectedHeight,
-                    x:
-                        render.width / 2 -
-                        npc.laneOffset * render.width * currentScaling +
-                        currentSegment.curve -
-                        baseOffset -
-                        (player.posx - baseOffset * 2) * currentScaling,
+                    y: npcScreenY,
+                    x: npcScreenX,
                     ymax: render.height / 2 + lastProjectedHeight,
                     s: 2.5 * currentScaling,
                     i: car,
                 });
+                if (DEBUG.enabled) {
+                    const lateralThreshold = 45;
+                    const boxW = 2 * lateralThreshold * currentScaling;
+                    const boxH = car.h * 2.5 * currentScaling;
+                    const dz = npc.position - player.position;
+                    const active = Math.abs(dz) < 6;
+                    spriteBuffer.push({
+                        debug: true,
+                        x: npcScreenX - boxW / 2,
+                        y: npcScreenY - boxH,
+                        w: boxW,
+                        h: boxH,
+                        color: active ? '#f00' : '#ff0',
+                    });
+                }
             }
         }
 
@@ -365,7 +382,13 @@ const renderGameFrame = () => {
     // pinta los sprites del decorado
     let sprite;
     while ((sprite = spriteBuffer.pop())) {
-        drawSprite(sprite);
+        if (sprite.debug) {
+            context.strokeStyle = sprite.color;
+            context.lineWidth = 1;
+            context.strokeRect(sprite.x, sprite.y, sprite.w, sprite.h);
+        } else {
+            drawSprite(sprite);
+        }
     }
 
     // --------------------------
@@ -381,6 +404,19 @@ const renderGameFrame = () => {
         carSprite = { a: car, x: 125, y: 190 };
     }
     drawImage(carSprite.a, carSprite.x, carSprite.y, 1);
+
+    if (DEBUG.enabled) {
+        const centerX = carSprite.x + carSprite.a.w / 2;
+        const lateralThreshold = 45;
+        context.strokeStyle = '#0ff';
+        context.lineWidth = 1;
+        context.strokeRect(
+            centerX - lateralThreshold,
+            carSprite.y,
+            lateralThreshold * 2,
+            carSprite.a.h
+        );
+    }
 
     // --------------------------
     // --     Draw the hud     --
