@@ -22,7 +22,7 @@ import { drawBackground } from './draw/drawBackground.js';
 import { renderSplashFrame } from './renderSplashFrame.js';
 import { getStages } from './stages.js';
 import { getBackgroundColor } from './getBackgroundColor.js';
-import { interpolateObjects } from './utils.js';
+import { interpolateObjects, setSeed } from './utils.js';
 import { drawDebugInfo, toggleDebug, DEBUG } from './debug.js';
 import {
     initEngineSound,
@@ -43,6 +43,7 @@ import { updateCarPhysics } from './physics/carPhysics.js';
 import { npcs, initNpcs, updateNpcs, CAR_HALF_WIDTH_LASTDELTA, CAR_HALF_LENGTH_POS } from './npc.js';
 import { gameMode, getCarPreset, saveHighscore } from './gameMode.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
+import { updateFx, drawFx, clearFx } from './fx.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -226,6 +227,7 @@ const renderGameFrame = () => {
             totalSec,
             car: getCarPreset().name,
             mode: gameMode.mode,
+            seed: gameMode.currentSeed,
             at: Date.now(),
         });
         drawString({ string: 'LAP COMPLETED!', pos: { x: 100, y: 90 } });
@@ -486,6 +488,9 @@ const renderGameFrame = () => {
     }
     drawImage(carSprite.a, carSprite.x, carSprite.y, 1);
 
+    updateFx();
+    drawFx(context);
+
     if (DEBUG.enabled) {
         const centerX = carSprite.x + carSprite.a.w / 2;
         const playerScaling = 30 / render.camera_distance;
@@ -571,6 +576,7 @@ const renderGameFrame = () => {
             totalSec,
             car: getCarPreset().name,
             mode: gameMode.mode,
+            seed: gameMode.currentSeed,
             at: Date.now(),
         });
         drawString({ string: 'GAME OVER!', pos: { x: 120, y: 90 } });
@@ -610,6 +616,12 @@ const startGame = () => {
         remainingTime = 100000; // Reset timer
         lastStageReached = 0; // Reset stage progress
         pauseState.paused = false;
+        clearFx();
+        // Nueva seed cada partida → nuevo road
+        const seed = (Math.random() * 0x7fffffff) | 0;
+        setSeed(seed);
+        generateRoad();
+        gameMode.currentSeed = seed;
         resetPlayer(player);
         // Aplicar preset de coche seleccionado
         const preset = getCarPreset();

@@ -18,10 +18,17 @@ export const roadParam = {
     length: 15, // Maintained track length
 };
 
+// Guardar zonas originales para permitir regenerate
+const ORIGINAL_ZONES = roadParam.length;
+
 // -------------------------------------
 // ---  Generates the road randomly  ---
 // -------------------------------------
 export const generateRoad = () => {
+    // reset para regenerate
+    road.length = 0;
+    roadParam.length = ORIGINAL_ZONES;
+
     //HEIGHT & CURVES
     let currentStateH = 0; //0=flat 1=up 2= down
     const transitionH = [

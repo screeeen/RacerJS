@@ -12,7 +12,16 @@ export const rgbToHex = (r, g, b) => {
     );
 };
 
-export const r = Math.random;
+// RNG seeded para roads reproducibles. setSeed antes de generateRoad.
+let _seed = (Date.now() & 0x7fffffff) || 1;
+export const setSeed = (s) => {
+    _seed = (s | 0) || 1;
+};
+export const getSeed = () => _seed;
+export const r = () => {
+    _seed = (_seed * 1103515245 + 12345) & 0x7fffffff;
+    return _seed / 0x7fffffff;
+};
 
 export const interpolateObjects = (start, end, t) => {
     const result = {};

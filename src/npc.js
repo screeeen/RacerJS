@@ -1,6 +1,8 @@
 import { roadSegmentSize } from './generateRoad.js';
 import { player, render } from './gameElements.js';
 import { playCollision } from './audio/engineSound.js';
+import { spawnCollisionFx } from './fx.js';
+import { r } from './utils.js';
 
 export const npcs = [];
 
@@ -57,7 +59,7 @@ export const initNpcs = () => {
         n.targetLaneOffset = n.laneOffset;
         const mult = PERSONALITY_TIMER_MULT[n.personality] || 1.0;
         n.laneTimer = Math.floor(
-            (LANE_TIMER_MIN + Math.random() * LANE_TIMER_RANGE) * mult
+            (LANE_TIMER_MIN + r() * LANE_TIMER_RANGE) * mult
         );
         n.colliding = false;
     }
@@ -80,6 +82,7 @@ export const updateNpcs = (road, playerLateralX) => {
         // edge-trigger: solo dispara al entrar a la zona, no cada frame
         if (inWindow && !npc.colliding) {
             playCollision();
+            spawnCollisionFx();
             player.speed *= COLLISION_PLAYER_SPEED_FACTOR;
             npc.speed *= COLLISION_NPC_SPEED_FACTOR;
             // push lateral player + push longitudinal según rear/front-end
@@ -104,7 +107,7 @@ export const updateNpcs = (road, playerLateralX) => {
             rubberband = Math.min((-distanceAhead - RUBBERBAND_DEADZONE) * RUBBERBAND_FACTOR, RUBBERBAND_MAX);
         }
 
-        const noise = (Math.random() - 0.5) * SPEED_NOISE_RANGE;
+        const noise = (r() - 0.5) * SPEED_NOISE_RANGE;
 
         const targetSpeed =
             npc.baseSpeed - curveSlowdown + rubberband + noise;
@@ -114,10 +117,10 @@ export const updateNpcs = (road, playerLateralX) => {
         npc.laneTimer -= 1;
         if (npc.laneTimer <= 0) {
             npc.targetLaneOffset =
-                LANES[Math.floor(Math.random() * LANES.length)];
+                LANES[Math.floor(r() * LANES.length)];
             const mult = PERSONALITY_TIMER_MULT[npc.personality] || 1.0;
             npc.laneTimer = Math.floor(
-                (LANE_TIMER_MIN + Math.random() * LANE_TIMER_RANGE) * mult
+                (LANE_TIMER_MIN + r() * LANE_TIMER_RANGE) * mult
             );
         }
         npc.laneOffset += (npc.targetLaneOffset - npc.laneOffset) * LANE_SMOOTHING;
