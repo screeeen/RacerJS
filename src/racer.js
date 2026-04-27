@@ -83,6 +83,8 @@ const posLoc = gl.getAttribLocation(program, 'a_position');
 gl.enableVertexAttribArray(posLoc);
 gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
+const ditherLoc = gl.getUniformLocation(program, 'u_dither');
+
 export const startTime = new Date();
 export let remainingTime;
 export let isGameStarted;
@@ -494,6 +496,9 @@ const renderGameFrame = () => {
     // Subir canvas2d como textura (reutiliza sharedTexture, no leak)
     gl.bindTexture(gl.TEXTURE_2D, sharedTexture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+
+    // Dithering off en debug mode
+    gl.uniform1f(ditherLoc, DEBUG.enabled ? 0 : 1);
 
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 };

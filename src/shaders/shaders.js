@@ -12,6 +12,7 @@ export const vsSource = `
 export const fsSource = `
     precision mediump float;
     uniform sampler2D u_tex;
+    uniform float u_dither;
     varying vec2 v_uv;
 
     // Bayer 4x4 como función float
@@ -44,6 +45,11 @@ export const fsSource = `
 
     void main() {
         vec4 color = texture2D(u_tex, v_uv);
+
+        if (u_dither < 0.5) {
+            gl_FragColor = color;
+            return;
+        }
 
         // Coordenadas del pixel en pantalla
         vec2 pixel = gl_FragCoord.xy;
