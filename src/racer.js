@@ -43,7 +43,7 @@ import { updateCarPhysics } from './physics/carPhysics.js';
 import { npcs, initNpcs, updateNpcs, CAR_HALF_WIDTH_LASTDELTA, CAR_HALF_LENGTH_POS } from './npc.js';
 import { gameMode, getCarPreset, saveHighscore } from './gameMode.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
-import { updateFx, drawFx, clearFx } from './fx.js';
+import { updateFx, drawFx, clearFx, spawnDriftSpark } from './fx.js';
 
 // -----------------------------
 // ---  closure scoped vars  ---
@@ -230,9 +230,10 @@ const renderGameFrame = () => {
             seed: gameMode.currentSeed,
             at: Date.now(),
         });
-        drawString({ string: 'LAP COMPLETED!', pos: { x: 100, y: 90 } });
-        drawString({ string: 'TIEMPO: ' + totalSec + 'S', pos: { x: 110, y: 105 } });
-        drawString({ string: 'COMARCAS: ' + lastStageReached, pos: { x: 110, y: 115 } });
+        drawString({ string: 'LAP COMPLETED!', pos: { x: 100, y: 80 } });
+        drawString({ string: 'TIEMPO: ' + totalSec + 'S', pos: { x: 110, y: 95 } });
+        drawString({ string: 'COMARCAS: ' + lastStageReached, pos: { x: 110, y: 105 } });
+        drawString({ string: 'SEED: ' + gameMode.currentSeed, pos: { x: 100, y: 120 } });
         stopEngineSound();
         isGameStarted = false;
         setTimeout(() => {
@@ -488,6 +489,14 @@ const renderGameFrame = () => {
     }
     drawImage(carSprite.a, carSprite.x, carSprite.y, 1);
 
+    // Drift sparks: cuando |vx| alta y velocidad razonable
+    if (Math.abs(player.vx) > 0.8 && player.speed > 4) {
+        const cx = carSprite.x + carSprite.a.w / 2;
+        const cy = carSprite.y + carSprite.a.h - 4;
+        const dir = player.vx > 0 ? 1 : -1;
+        spawnDriftSpark(cx - dir * 18, cy, -dir);
+    }
+
     updateFx();
     drawFx(context);
 
@@ -579,10 +588,11 @@ const renderGameFrame = () => {
             seed: gameMode.currentSeed,
             at: Date.now(),
         });
-        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 90 } });
-        drawString({ string: 'PISTA: ' + pct + '%', pos: { x: 120, y: 105 } });
-        drawString({ string: 'TIEMPO: ' + totalSec + 'S', pos: { x: 120, y: 115 } });
-        drawString({ string: 'COMARCA: ' + lastStageReached, pos: { x: 120, y: 125 } });
+        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 80 } });
+        drawString({ string: 'PISTA: ' + pct + '%', pos: { x: 120, y: 95 } });
+        drawString({ string: 'TIEMPO: ' + totalSec + 'S', pos: { x: 120, y: 105 } });
+        drawString({ string: 'COMARCA: ' + lastStageReached, pos: { x: 120, y: 115 } });
+        drawString({ string: 'SEED: ' + gameMode.currentSeed, pos: { x: 100, y: 130 } });
         stopEngineSound();
         isGameStarted = false;
 

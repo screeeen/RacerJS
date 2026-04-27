@@ -16,6 +16,19 @@ export const spawnCollisionFx = (x = 160, y = 200) => {
     }
 };
 
+// Sparks pequeñas por drift, dir=±1, cx/cy en rueda trasera
+export const spawnDriftSpark = (cx, cy, dir) => {
+    const life = 10 + Math.random() * 8;
+    particles.push({
+        x: cx + dir * 4 + (Math.random() - 0.5) * 4,
+        y: cy + (Math.random() - 0.5) * 3,
+        vx: dir * (0.8 + Math.random() * 1.5),
+        vy: -Math.random() * 0.6,
+        life,
+        maxLife: life,
+    });
+};
+
 export const updateFx = () => {
     for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
