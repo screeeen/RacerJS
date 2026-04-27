@@ -174,25 +174,25 @@ y desactiva el dithering.
 ## 13. Roadmap (orden sugerido)
 
 ### Inmediato
-- [ ] Tunear feeling de drift por stage (palmeras = más derrape, tundra = hielo).
-- [ ] SFX colisión y derrape.
-- [ ] Reactivar BONUS_TIME en checkpoints (balance de timer).
+- [x] Tunear feeling de drift por stage (tundra=0.95 hielo, palms=0.85, tunel=0.92, desert=0.87).
+- [x] SFX colisión y derrape (Web Audio: noise burst + skid loop por |vx|).
+- [x] Reactivar BONUS_TIME en checkpoints (5s por checkpoint).
 
 ### Corto plazo
-- [ ] Más NPCs (5-7) con AI variada.
-- [ ] Curve indicator (flecha en HUD anticipando próxima curva).
-- [ ] Música por stage.
-- [ ] Pantalla de score final con tiempo total.
+- [x] Más NPCs (5) con AI variada (cautious / normal / aggressive).
+- [x] Curve indicator (flecha HUD ">>>" / "<<<" anticipa próxima curva).
+- [x] Música por stage (chord pad procedural, root distinto por comarca).
+- [x] Pantalla de score final con tiempo total y comarca alcanzada.
 
 ### Medio plazo
 - [ ] Sistema de rutas ramificadas (clásico OutRun: izquierda/derecha al checkpoint).
-- [ ] Modo Time Attack (sin NPCs, mejor tiempo).
-- [ ] High scores locales.
-- [ ] Más stages / sprites.
+- [x] Modo Time Attack (sin NPCs, tecla T en splash).
+- [x] High scores locales (localStorage, top 5 en splash).
+- [ ] Más stages / sprites (require artwork nuevo).
 
 ### Largo plazo
-- [ ] Selección de coche con stats distintos.
-- [ ] Soundtrack diegético (radio FM con tracks).
+- [x] Selección de coche con stats distintos (3 presets: STANDARD / TURBO / GRIP, tecla C).
+- [ ] Soundtrack diegético (radio FM con tracks) — pad sostenido por ahora.
 - [ ] Replay system.
 - [ ] Online leaderboard.
 

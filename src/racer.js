@@ -28,15 +28,20 @@ import {
     initEngineSound,
     updateEngineSound,
     stopEngineSound,
+    updateSkid,
+    setMusicStage,
+    setMusicVolume,
 } from './audio/engineSound.js';
 import {
     initControls,
     isTurningLeft,
     isTurningRight,
     isBraking,
+    pauseState,
 } from './controllers/gameControls.js';
 import { updateCarPhysics } from './physics/carPhysics.js';
 import { npcs, initNpcs, updateNpcs, CAR_HALF_WIDTH_LASTDELTA, CAR_HALF_LENGTH_POS } from './npc.js';
+import { gameMode, getCarPreset, saveHighscore } from './gameMode.js';
 import { fsSource, vsSource } from './shaders/shaders.js';
 
 // -----------------------------
@@ -89,7 +94,7 @@ export const startTime = new Date();
 export let remainingTime;
 export let isGameStarted;
 export let lastStageReached;
-export const BONUS_TIME = 0; // 5 seconds bonus time per stage
+export const BONUS_TIME = 5000; // 5s bonus por checkpoint
 
 export const spritesheet = new Image();
 
@@ -127,9 +132,25 @@ const init = () => {
 
 //renders one frame
 const renderGameFrame = () => {
+    // Pause: dibuja overlay y salta lógica
+    if (pauseState.paused) {
+        setMusicVolume(0);
+        drawString({ string: 'PAUSE', pos: { x: 140, y: 110 } });
+        drawString({ string: 'P TO RESUME', pos: { x: 110, y: 125 } });
+        // Aún hay que subir textura para que GL muestre el frame
+        gl.bindTexture(gl.TEXTURE_2D, sharedTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+        gl.uniform1f(ditherLoc, DEBUG.enabled ? 0 : 1);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        return;
+    }
+
     // Clean screen
     context.fillStyle = sceneryColor;
     context.fillRect(0, 0, render.width, render.height);
+
+    // Restaurar volumen de música por si venimos de pause
+    setMusicVolume(1);
 
     // --------------------------
     // -- Update the car state --
@@ -143,6 +164,9 @@ const renderGameFrame = () => {
         acceleration: player.acceleration,
     });
 
+    // Skid: intensidad ligada a |vx| sobre threshold
+    updateSkid(Math.max(0, Math.abs(player.vx) - 0.6));
+
     const spriteBuffer = [];
 
     // --------------------------
@@ -153,10 +177,28 @@ const renderGameFrame = () => {
     const currentStagePos =
         Math.floor(absoluteIndex / roadParam.zoneSection) + 1;
 
+    // Grip lateral por stage (interpolado en transiciones)
+    {
+        const _stages = getStages(true);
+        const _now = _stages[currentStagePos] || _stages[0];
+        const _prev = _stages[currentStagePos - 1] || _stages[0];
+        const _t =
+            _now.startIndex !== undefined &&
+            absoluteIndex >= _now.startIndex &&
+            absoluteIndex < _now.endIndex
+                ? (absoluteIndex - _now.startIndex) /
+                  (_now.endIndex - _now.startIndex)
+                : 0;
+        const _gPrev = _prev.gripLat || 0.88;
+        const _gNow = _now.gripLat || 0.88;
+        player.gripLat = _gPrev + (_gNow - _gPrev) * _t;
+    }
+
     // Check if we've reached a new stage
     if (currentStagePos > lastStageReached) {
         lastStageReached = currentStagePos;
         remainingTime += BONUS_TIME;
+        setMusicStage(currentStagePos);
         drawString({
             string: 'Checkpoint!',
             pos: { x: 100, y: 40 },
@@ -172,12 +214,28 @@ const renderGameFrame = () => {
     // --------------------------
     // --   Finish!   --
     // --------------------------
-    if (absoluteIndex >= roadParam.length - render.depthOfField - 1) {
-        drawString({
-            string: 'Lap completed!',
-            pos: { x: 100, y: 20 },
-            time: 960000,
+    if (
+        absoluteIndex >= roadParam.length - render.depthOfField - 1 &&
+        gameInterval
+    ) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+        const totalSec = Math.floor((Date.now() - startTime.getTime()) / 1000);
+        saveHighscore({
+            pct: 100,
+            totalSec,
+            car: getCarPreset().name,
+            mode: gameMode.mode,
+            at: Date.now(),
         });
+        drawString({ string: 'LAP COMPLETED!', pos: { x: 100, y: 90 } });
+        drawString({ string: 'TIEMPO: ' + totalSec + 'S', pos: { x: 110, y: 105 } });
+        drawString({ string: 'COMARCAS: ' + lastStageReached, pos: { x: 110, y: 115 } });
+        stopEngineSound();
+        isGameStarted = false;
+        setTimeout(() => {
+            splashInterval = setInterval(splashScreen, 60);
+        }, 4000);
     }
 
     let currentSegmentIndex = (absoluteIndex - 2) % road.length;
@@ -458,6 +516,26 @@ const renderGameFrame = () => {
     let speed = Math.round((player.speed / player.maxSpeed) * 200);
     drawString({ string: '' + speed + 'mph', pos: { x: 270, y: 220 } });
 
+    // Mode + car indicator (esquina inferior izquierda)
+    const _car = getCarPreset();
+    drawString({
+        string: (gameMode.mode === 'time_attack' ? 'TA ' : '') + _car.name,
+        pos: { x: 5, y: 220 },
+    });
+
+    // Curve indicator: anticipa próxima curva mirando 30 segs adelante
+    {
+        const lookahead = 30;
+        const curveNow = road[absoluteIndex % road.length].curve || 0;
+        const curveAhead =
+            road[(absoluteIndex + lookahead) % road.length].curve || 0;
+        const delta = curveAhead - curveNow;
+        let arrow = '';
+        if (delta > 80) arrow = '>>>';
+        else if (delta < -80) arrow = '<<<';
+        if (arrow) drawString({ string: arrow, pos: { x: 145, y: 22 } });
+    }
+
     // --------------------------
     // --     Timer logid     --
     // --------------------------
@@ -484,14 +562,28 @@ const renderGameFrame = () => {
     // Game over when time runs out
     if (remainingTime <= 0) {
         clearInterval(gameInterval);
-        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 100 } });
+        const pct = Math.round(
+            (absoluteIndex / (roadParam.length - render.depthOfField)) * 100
+        );
+        const totalSec = Math.floor((Date.now() - startTime.getTime()) / 1000);
+        saveHighscore({
+            pct,
+            totalSec,
+            car: getCarPreset().name,
+            mode: gameMode.mode,
+            at: Date.now(),
+        });
+        drawString({ string: 'GAME OVER!', pos: { x: 120, y: 90 } });
+        drawString({ string: 'PISTA: ' + pct + '%', pos: { x: 120, y: 105 } });
+        drawString({ string: 'TIEMPO: ' + totalSec + 'S', pos: { x: 120, y: 115 } });
+        drawString({ string: 'COMARCA: ' + lastStageReached, pos: { x: 120, y: 125 } });
         stopEngineSound();
         isGameStarted = false;
 
-        // Wait 2 seconds before restarting
+        // Wait 3 seconds before restarting
         setTimeout(() => {
             splashInterval = setInterval(splashScreen, 60);
-        }, 2000);
+        }, 3000);
     }
     // Subir canvas2d como textura (reutiliza sharedTexture, no leak)
     gl.bindTexture(gl.TEXTURE_2D, sharedTexture);
@@ -517,8 +609,17 @@ const startGame = () => {
         splashInterval = null;
         remainingTime = 100000; // Reset timer
         lastStageReached = 0; // Reset stage progress
+        pauseState.paused = false;
         resetPlayer(player);
-        initNpcs();
+        // Aplicar preset de coche seleccionado
+        const preset = getCarPreset();
+        player.maxSpeed = preset.maxSpeed;
+        player.gripLat = preset.gripLat;
+        player.centripetal = preset.centripetal;
+        player.lateralInput = preset.lateralInput;
+        // Time Attack: sin NPCs
+        if (gameMode.mode === 'time_attack') npcs.length = 0;
+        else initNpcs();
         initEngineSound();
     }
 };

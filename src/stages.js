@@ -54,6 +54,7 @@ export const getStages = (alternate) => [
         backgroundImg: 'clouds',
         startIndex: 5000,
         endIndex: 6000,
+        gripLat: 0.87, // arena suelta, leve drift
         colors: {
             background: [70,91,203],
             grass: [30,26,117],
@@ -69,6 +70,7 @@ export const getStages = (alternate) => [
         backgroundImg: 'clouds',
         startIndex: 3100,
         endIndex: 4000,
+        gripLat: 0.85, // asfalto firme, twitchy
         colors: {
             background: [114, 158, 128],
             grass: [14, 178, 128],
@@ -84,6 +86,7 @@ export const getStages = (alternate) => [
         backgroundImg: 'clouds',
         startIndex: 4100,
         endIndex: 5000,
+        gripLat: 0.95, // hielo, persiste vx
         colors: {
             background: [0,0,0],
             grass:  [0,0,0],
@@ -99,6 +102,7 @@ export const getStages = (alternate) => [
         backgroundImg: 'clouds',
         startIndex: 5100,
         endIndex: 6000,
+        gripLat: 0.92, // mojado
         colors: {
             background: [200, 190, 195],
             grass: alternate ? [180, 170, 175] : [170, 160, 165],

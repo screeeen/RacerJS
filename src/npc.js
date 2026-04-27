@@ -1,5 +1,6 @@
 import { roadSegmentSize } from './generateRoad.js';
 import { player, render } from './gameElements.js';
+import { playCollision } from './audio/engineSound.js';
 
 export const npcs = [];
 
@@ -36,16 +37,28 @@ const LANE_SMOOTHING = 0.03;
 const LANE_TIMER_MIN = 120;
 const LANE_TIMER_RANGE = 180;
 
+// personalidades: multiplica timer base. <1 = cambia carril más seguido
+const PERSONALITY_TIMER_MULT = {
+    aggressive: 0.5,
+    normal: 1.0,
+    cautious: 1.7,
+};
+
 export const initNpcs = () => {
     npcs.length = 0;
     npcs.push(
-        { position: 100, laneOffset: -0.25, baseSpeed: 10, speed: 10 },
-        { position: 200, laneOffset: 0, baseSpeed: 12, speed: 12 },
-        { position: 350, laneOffset: 0.25, baseSpeed: 15, speed: 15 }
+        { position: 100, laneOffset: -0.25, baseSpeed: 9, speed: 9, personality: 'cautious' },
+        { position: 200, laneOffset: 0, baseSpeed: 11, speed: 11, personality: 'normal' },
+        { position: 350, laneOffset: 0.25, baseSpeed: 13, speed: 13, personality: 'aggressive' },
+        { position: 500, laneOffset: -0.25, baseSpeed: 14, speed: 14, personality: 'normal' },
+        { position: 750, laneOffset: 0.25, baseSpeed: 16, speed: 16, personality: 'aggressive' }
     );
     for (const n of npcs) {
         n.targetLaneOffset = n.laneOffset;
-        n.laneTimer = LANE_TIMER_MIN + Math.floor(Math.random() * LANE_TIMER_RANGE);
+        const mult = PERSONALITY_TIMER_MULT[n.personality] || 1.0;
+        n.laneTimer = Math.floor(
+            (LANE_TIMER_MIN + Math.random() * LANE_TIMER_RANGE) * mult
+        );
         n.colliding = false;
     }
 };
@@ -66,6 +79,7 @@ export const updateNpcs = (road, playerLateralX) => {
 
         // edge-trigger: solo dispara al entrar a la zona, no cada frame
         if (inWindow && !npc.colliding) {
+            playCollision();
             player.speed *= COLLISION_PLAYER_SPEED_FACTOR;
             npc.speed *= COLLISION_NPC_SPEED_FACTOR;
             // push lateral player + push longitudinal según rear/front-end
@@ -101,7 +115,10 @@ export const updateNpcs = (road, playerLateralX) => {
         if (npc.laneTimer <= 0) {
             npc.targetLaneOffset =
                 LANES[Math.floor(Math.random() * LANES.length)];
-            npc.laneTimer = LANE_TIMER_MIN + Math.floor(Math.random() * LANE_TIMER_RANGE);
+            const mult = PERSONALITY_TIMER_MULT[npc.personality] || 1.0;
+            npc.laneTimer = Math.floor(
+                (LANE_TIMER_MIN + Math.random() * LANE_TIMER_RANGE) * mult
+            );
         }
         npc.laneOffset += (npc.targetLaneOffset - npc.laneOffset) * LANE_SMOOTHING;
     }

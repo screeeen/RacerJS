@@ -1,7 +1,8 @@
-
+import { cycleCar, toggleMode } from '../gameMode.js';
 
 // Game controls module
 export const keys = [];
+export const pauseState = { paused: false };
 
 // Initialize game controls
 export const initControls = ({ startGame, toggleDebug, isGameStarted }) => {
@@ -17,6 +18,15 @@ export const initControls = ({ startGame, toggleDebug, isGameStarted }) => {
         keys[e.keyCode] = false;
         if (e.keyCode === 68) { // 'D' key
             toggleDebug();
+        }
+        if (e.keyCode === 84) { // 'T' key — toggle Time Attack mode
+            toggleMode();
+        }
+        if (e.keyCode === 67) { // 'C' key — cycle car preset
+            cycleCar();
+        }
+        if (e.keyCode === 80) { // 'P' key — pause/resume
+            pauseState.paused = !pauseState.paused;
         }
     });
 

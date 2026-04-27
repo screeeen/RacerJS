@@ -9,6 +9,18 @@ let oscillator2;
 let gainNode2;
 let filterNode2;
 
+// Skid (derrape) loop
+let skidSource;
+let skidGain;
+// Music chord pad + arpeggio
+let musicOscs = [];
+let musicGain;
+let musicMaster; // master gain para fade pause
+let arpOsc;
+let arpGain;
+let arpInterval;
+let arpRoot = 110;
+
 // Gear thresholds and characteristics
 const gearConfig = {
     1: { speedThreshold: 0.08, freqMultiplier: 1.4, filterMod: 1.2, baseFreq: 4 },
@@ -61,6 +73,101 @@ export const initEngineSound = () => {
     // Start the oscillators
      oscillator.start();
      oscillator2.start();
+
+    initSkid();
+    initMusic();
+};
+
+// Loop de ruido para derrape
+const initSkid = () => {
+    const sr = audioContext.sampleRate;
+    const buf = audioContext.createBuffer(1, sr * 0.5, sr);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    skidSource = audioContext.createBufferSource();
+    skidSource.buffer = buf;
+    skidSource.loop = true;
+    const filter = audioContext.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 3500;
+    skidGain = audioContext.createGain();
+    skidGain.gain.value = 0;
+    skidSource.connect(filter);
+    filter.connect(skidGain);
+    skidGain.connect(audioContext.destination);
+    skidSource.start();
+};
+
+export const updateSkid = (intensity) => {
+    if (!skidGain || !audioContext) return;
+    const target = Math.max(0, Math.min(intensity, 1)) * 0.18;
+    skidGain.gain.setTargetAtTime(target, audioContext.currentTime, 0.05);
+};
+
+// Pad sostenido tipo chord, root cambia por stage
+const STAGE_ROOTS = {
+    0: 110.00, 1: 130.81, 2: 98.00, 3: 146.83,
+    4: 110.00, 5: 87.31,  6: 73.42, 7: 116.54,
+};
+
+const initMusic = () => {
+    // Master para todo lo musical (fade pause)
+    musicMaster = audioContext.createGain();
+    musicMaster.gain.value = 1;
+    musicMaster.connect(audioContext.destination);
+
+    musicGain = audioContext.createGain();
+    musicGain.gain.value = 0.025;
+    musicGain.connect(musicMaster);
+    const intervals = [0, 4, 7]; // triada mayor
+    musicOscs = intervals.map((interval) => {
+        const o = audioContext.createOscillator();
+        o.type = 'triangle';
+        o.frequency.value = arpRoot * Math.pow(2, interval / 12);
+        o.connect(musicGain);
+        o.start();
+        return o;
+    });
+
+    // Arpeggio square con envelope
+    arpGain = audioContext.createGain();
+    arpGain.gain.value = 0;
+    arpGain.connect(musicMaster);
+    arpOsc = audioContext.createOscillator();
+    arpOsc.type = 'square';
+    arpOsc.frequency.value = arpRoot * 2;
+    arpOsc.connect(arpGain);
+    arpOsc.start();
+
+    let step = 0;
+    const pattern = [0, 7, 12, 7, 4, 7, 12, 7];
+    arpInterval = setInterval(() => {
+        if (!audioContext) return;
+        const note = pattern[step % pattern.length];
+        const f = arpRoot * 2 * Math.pow(2, note / 12);
+        arpOsc.frequency.setValueAtTime(f, audioContext.currentTime);
+        arpGain.gain.setValueAtTime(0.05, audioContext.currentTime);
+        arpGain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + 0.18
+        );
+        step++;
+    }, 220);
+};
+
+export const setMusicVolume = (v) => {
+    if (!musicMaster || !audioContext) return;
+    musicMaster.gain.setTargetAtTime(v, audioContext.currentTime, 0.1);
+};
+
+export const setMusicStage = (stagePos) => {
+    if (!musicOscs.length || !audioContext) return;
+    arpRoot = STAGE_ROOTS[stagePos] || 110;
+    const intervals = [0, 4, 7];
+    musicOscs.forEach((osc, i) => {
+        const f = arpRoot * Math.pow(2, intervals[i] / 12);
+        osc.frequency.setTargetAtTime(f, audioContext.currentTime, 0.6);
+    });
 };
 
 // Update engine sound based on speed and acceleration
@@ -141,6 +248,36 @@ export const updateEngineSound = ({ speed, maxSpeed, acceleration }) => {
     gainNode2.gain.setTargetAtTime(volume2, audioContext.currentTime, 0.1);
 };
 
+// Burst de ruido filtrado: thud + decay para impacto coche
+export const playCollision = () => {
+    if (!audioContext) return;
+    const dur = 0.18;
+    const sr = audioContext.sampleRate;
+    const buf = audioContext.createBuffer(1, sr * dur, sr);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp((-i / data.length) * 6);
+    }
+    const noise = audioContext.createBufferSource();
+    noise.buffer = buf;
+
+    const gain = audioContext.createGain();
+    gain.gain.setValueAtTime(0.4, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + dur);
+
+    const filter = audioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1800, audioContext.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + dur);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioContext.destination);
+
+    noise.start();
+    noise.stop(audioContext.currentTime + dur);
+};
+
 // Stop engine sound
 export const stopEngineSound = () => {
     if (!audioContext) return;
@@ -161,6 +298,18 @@ export const stopEngineSound = () => {
     setTimeout(() => {
         oscillator.stop();
         oscillator2.stop();
+        if (skidSource) try { skidSource.stop(); } catch (e) {}
+        musicOscs.forEach((o) => { try { o.stop(); } catch (e) {} });
+        if (arpOsc) try { arpOsc.stop(); } catch (e) {}
+        if (arpInterval) clearInterval(arpInterval);
+        musicOscs = [];
+        skidSource = null;
+        skidGain = null;
+        musicGain = null;
+        musicMaster = null;
+        arpOsc = null;
+        arpGain = null;
+        arpInterval = null;
         audioContext.close();
         audioContext = null;
         oscillator = null;
