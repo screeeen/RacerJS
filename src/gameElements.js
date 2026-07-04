@@ -23,15 +23,15 @@ export const player = {
 
 // this is somehow stupid
 export const resetPlayer = (player) => {
-    player.position= 10;
-    player.speed= 0;
-    player.acceleration= 0.02;
-    player.deceleration= 0.2;
-    player.breaking= 0.6;
-    player.turning= 6.0;
-    player.posx= 0.5;
-    player.maxSpeed= 40;
-}
+    player.position = 10;
+    player.speed = 0;
+    player.acceleration = 0.02;
+    player.deceleration = 0.2;
+    player.breaking = 0.6;
+    player.turning = 6.0;
+    player.posx = 0.5;
+    player.maxSpeed = 20;
+};
 
 //sprites
 export const car = {
@@ -130,8 +130,6 @@ export const house_flat = {
     h: 30,
 };
 
-
-
 export const logo = {
     x: 161,
     y: 39,
@@ -140,4 +138,3 @@ export const logo = {
 };
 
 export const backgroundColor = getBackgroundColor();
-

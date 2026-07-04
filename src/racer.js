@@ -133,17 +133,14 @@ const renderGameFrame = () => {
     let counter = absoluteIndex % (2 * numberOfSegmentPerColor); // for alternating color band
 
     const stages = getStages(counter < numberOfSegmentPerColor);
-    console.log('stages', stages);
     const zoneSections = getZoneSections(stages);
-
-    const currentStagePos =
-        Math.floor(absoluteIndex / roadParam.zoneSection) + 1;
-    // absoluteIndex - stages[endIndex];
 
     const zoneSection = zoneSections.findIndex(
         (stageEndIndex) => absoluteIndex < stageEndIndex
     );
     console.log('zoneSection', zoneSection);
+
+    const currentStagePos = zoneSection;
 
     // Check if we've reached a new stage
     if (currentStagePos > lastStageReached) {
@@ -358,7 +355,7 @@ const renderGameFrame = () => {
     drawString({ string: '' + speed + 'mph', pos: { x: 270, y: 220 } });
 
     // --------------------------
-    // --     Timer logid     --
+    // --     Timer logic     --
     // --------------------------
     let now = new Date();
     let diff = now.getTime() - startTime.getTime();

@@ -9,7 +9,7 @@ import {
     ruins_arc,
     palm,
 } from './gameElements.js';
-import { roadParam } from './stages.js';
+import { getStages, roadParam, getZoneSections } from './stages.js';
 import { r } from './utils.js';
 export const road = [];
 export const roadSegmentSize = 5; // ??? roadparam.length
@@ -90,6 +90,17 @@ export const generateRoad = () => {
                     break;
             }
         }
+
+        // const stages = getStages(counter < numberOfSegmentPerColor);
+        const zoneSections = getZoneSections();
+
+        // const zoneSection = zoneSections.findIndex(
+        //     (stageEndIndex) => absoluteIndex < stageEndIndex
+        // );
+        // console.log('zoneSection', zoneSection);
+
+        console.log('roadParam.zoneSection', roadParam.zoneSection);
+        console.log('zoneSections', zoneSections);
 
         const currentStage = roadParam.length - zones; // solo para debug, se generan las stages
         for (var i = 0; i < roadParam.zoneSection; i++) {

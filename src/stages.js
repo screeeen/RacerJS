@@ -9,8 +9,12 @@ export const roadParam = {
     length: 15, // Maintained track length
 };
 
-export const getZoneSections = (stages) =>
-    stages.map((stage) => stage.zoneSection);
+// // export const getZoneSections = (stages) =>
+//     stages.map((stage) => stage.zoneSection);
+
+export const getZoneSections = () => [
+    600, 1000, 2000, 3000, 4000, 5000, 6000, 7000,
+];
 
 // descriptor de fases
 export const getStages = (alternate) => [
